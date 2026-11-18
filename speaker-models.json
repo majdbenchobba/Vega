@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "model_key": "wespeaker-resnet34-lm-voxceleb2",
+  "preprocess_version": "vega-speaker-fbank80-hamming-cmn-segmentation-v3",
+  "decision_policy": {
+    "version": "echo-review-v1",
+    "method": "delayed-weighted-linear-prediction",
+    "fft_samples": 512,
+    "hop_samples": 128,
+    "taps": 12,
+    "delay_frames": 3,
+    "iterations": 3,
+    "ridge_fraction": 0.000001,
+    "max_restore_gain": 2,
+    "raw_strong_overlap_veto": true,
+    "raw_distinct_speaker_veto": true,
+    "embedding_input": "original_audio_with_complete_speech_coverage"
+  },
+  "short_utterance_policy": {
+    "version": "short-utterance-v1",
+    "min_voiced_seconds": 0.3,
+    "max_seconds": 4,
+    "left_context_samples": 16000,
+    "reference": "complete_voiced_envelope"
+  },
+  "platform": {
+    "system": "Windows",
+    "machine": "AMD64",
+    "python": "3.13",
+    "provider": "CPUExecutionProvider",
+    "intra_op_threads": 2,
+    "inter_op_threads": 1,
+    "windows_prerequisite": "An existing compatible Microsoft Visual C++ runtime; setup never installs it."
+  },
+  "audio": {
+    "sample_rate": 16000,
+    "channels": 1,
+    "encoding": "s16le",
+    "max_seconds": 30,
+    "embedding_dimensions": 256
+  },
+  "preprocessing": {
+    "pcm_float_scale": 32768,
+    "num_mel_bins": 80,
+    "frame_length_ms": 25,
+    "frame_shift_ms": 10,
+    "window_type": "hamming",
+    "dither": 0,
+    "snip_edges": true,
+    "use_energy": false,
+    "utterance_mean_normalization": true,
+    "embedding_l2_normalization": true,
+    "embedding_audio": "Contiguous natural waveform within each window, plus a complete-recording reference; no 10 ms voiced-cell concatenation."
+  },
+  "analysis_policy": {
+    "segmentation_window_samples": 160000,
+    "segmentation_hop_samples": 80000,
+    "segmentation_frames": 589,
+    "segmentation_receptive_field_samples": 991,
+    "segmentation_frame_step_samples": 270,
+    "analysis_cell_samples": 160,
+    "speech_probability": 0.5,
+    "conditional_single_probability": 0.85,
+    "speaker_slot_probability": 0.5,
+    "overlap_probability": 0.1,
+    "strong_overlap_probability": 0.5,
+    "overlap_min_seconds": 0.1,
+    "context_reliability_ratio": 0.5,
+    "context_weighting": "hamming",
+    "powerset_decoding": "argmax",
+    "tail_context": "end_aligned",
+    "speaker_evidence_seconds": 0.1,
+    "min_voiced_seconds": 3,
+    "target_max_window_voiced_seconds": 6,
+    "embedding_audio": "contiguous",
+    "clip_reference": "complete_recording",
+    "min_rms": 0.005,
+    "clipping_amplitude": 0.999,
+    "max_clipped_fraction": 0.005,
+    "stationary_tone_power_fraction": 0.98,
+    "notes": "Preserve decoder v2 speech/overlap guards. Speaker vectors use contiguous natural waveform, including pauses. A complete-recording reference accompanies all verified short windows; enrollment compares complete recordings rather than arbitrary halves."
+  },
+  "models": {
+    "embedding": {
+      "filename": "voxceleb_resnet34_LM.onnx",
+      "source_filename": "voxceleb_resnet34_LM.onnx",
+      "repository": "Wespeaker/wespeaker-voxceleb-resnet34-LM",
+      "revision": "f0c48c298fd835726c27956a5d617bad7115627e",
+      "url": "https://huggingface.co/Wespeaker/wespeaker-voxceleb-resnet34-LM/resolve/f0c48c298fd835726c27956a5d617bad7115627e/voxceleb_resnet34_LM.onnx",
+      "metadata_url": "https://huggingface.co/api/models/Wespeaker/wespeaker-voxceleb-resnet34-LM/revision/f0c48c298fd835726c27956a5d617bad7115627e?blobs=true",
+      "size": 26530309,
+      "sha256": "7bb2f06e9df17cdf1ef14ee8a15ab08ed28e8d0ef5054ee135741560df2ec068",
+      "license": "CC-BY-4.0",
+      "input_name": "feats",
+      "output_name": "embs",
+      "input_shape": [
+        "B",
+        "T",
+        80
+      ],
+      "output_shape": [
+        "B",
+        256
+      ]
+    },
+    "segmentation": {
+      "filename": "pyannote-segmentation-3.0.onnx",
+      "source_filename": "model.onnx",
+      "repository": "csukuangfj/sherpa-onnx-pyannote-segmentation-3-0",
+      "revision": "9403a6902bb58e3d5ae8c7e77c3422de279db2e0",
+      "url": "https://huggingface.co/csukuangfj/sherpa-onnx-pyannote-segmentation-3-0/resolve/9403a6902bb58e3d5ae8c7e77c3422de279db2e0/model.onnx",
+      "metadata_url": "https://huggingface.co/api/models/csukuangfj/sherpa-onnx-pyannote-segmentation-3-0/revision/9403a6902bb58e3d5ae8c7e77c3422de279db2e0?blobs=true",
+      "size": 5992913,
+      "sha256": "220ad67ca923bef2fa91f2390c786097bf305bceb5e261d4af67b38e938e1079",
+      "license": "MIT",
+      "input_name": "x",
+      "output_name": "y",
+      "input_shape": [
+        "N",
+        1,
+        "T"
+      ],
+      "output_shape": [
+        "N",
+        "T",
+        7
+      ],
+      "required_metadata": {
+        "num_speakers": "3",
+        "powerset_max_classes": "2",
+        "num_classes": "7",
+        "sample_rate": "16000",
+        "window_size": "160000",
+        "receptive_field_size": "991",
+        "receptive_field_shift": "270",
+        "model_type": "pyannote-segmentation-3.0",
+        "version": "1"
+      }
+    }
+  },
+  "wheels": [
+    {
+      "name": "onnxruntime",
+      "version": "1.30.0",
+      "filename": "onnxruntime-1.30.0-cp313-cp313-win_amd64.whl",
+      "size": 14311378,
+      "sha256": "4b63041bd623a9a9ac5e353948436c6fa7f43edd12d6b4a4ebc340bca959ba93",
+      "url": "https://files.pythonhosted.org/packages/3c/dd/c57c529dbc6dd55eca24b12cfbeab1b6a690de72083824eca689085f55b0/onnxruntime-1.30.0-cp313-cp313-win_amd64.whl",
+      "license": "MIT"
+    },
+    {
+      "name": "kaldi-native-fbank",
+      "version": "1.22.3",
+      "filename": "kaldi_native_fbank-1.22.3-cp313-cp313-win_amd64.whl",
+      "size": 308032,
+      "sha256": "4fb769337c7d482166ada8ba041003e4a9de3a778dc970b6b5802a382e581724",
+      "url": "https://files.pythonhosted.org/packages/63/48/20bfa3f8d88605e2ec2c274c343dec1f112077e687440d64d3caa4b9136c/kaldi_native_fbank-1.22.3-cp313-cp313-win_amd64.whl",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "numpy",
+      "version": "2.5.3",
+      "filename": "numpy-2.5.3-cp313-cp313-win_amd64.whl",
+      "size": 12560965,
+      "sha256": "71cad2b2a7451ab79d8f5e71b453485b6775963d5cf794179144a7463fe6e8ec",
+      "url": "https://files.pythonhosted.org/packages/f3/ec/100f2b1794ede74a9b3d7ec6b9736927f56713414c1dfe19ab6c383494bf/numpy-2.5.3-cp313-cp313-win_amd64.whl",
+      "license": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0"
+    },
+    {
+      "name": "flatbuffers",
+      "version": "25.12.19",
+      "filename": "flatbuffers-25.12.19-py2.py3-none-any.whl",
+      "size": 26661,
+      "sha256": "7634f50c427838bb021c2d66a3d1168e9d199b0607e6329399f04846d42e20b4",
+      "url": "https://files.pythonhosted.org/packages/e8/2d/d2a548598be01649e2d46231d151a6c56d10b964d94043a335ae56ea2d92/flatbuffers-25.12.19-py2.py3-none-any.whl",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "packaging",
+      "version": "26.3",
+      "filename": "packaging-26.3-py3-none-any.whl",
+      "size": 129956,
+      "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c",
+      "url": "https://files.pythonhosted.org/packages/63/34/ba1c580383c9eada3711951fef0795c80b829a078d72188184bcab9dd527/packaging-26.3-py3-none-any.whl",
+      "license": "Apache-2.0 OR BSD-2-Clause"
+    },
+    {
+      "name": "protobuf",
+      "version": "7.36.2",
+      "filename": "protobuf-7.36.2-cp310-abi3-win_amd64.whl",
+      "size": 456514,
+      "sha256": "a300819d441e078a5608c0d3c709796bb548136058fda017ae51d425b44fd353",
+      "url": "https://files.pythonhosted.org/packages/8a/55/b77bda4e5e5f5971fb51b07663694690e9afdb9402136c16a522bd621cad/protobuf-7.36.2-cp310-abi3-win_amd64.whl",
+      "license": "BSD-3-Clause"
+    }
+  ],
+  "notices": [
+    {
+      "filename": "WeSpeaker-CC-BY-4.0.txt",
+      "url": "https://creativecommons.org/licenses/by/4.0/legalcode.txt",
+      "size": 18657,
+      "sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411"
+    },
+    {
+      "filename": "Pyannote-MIT.txt",
+      "url": "https://huggingface.co/csukuangfj/sherpa-onnx-pyannote-segmentation-3-0/raw/9403a6902bb58e3d5ae8c7e77c3422de279db2e0/LICENSE",
+      "size": 1061,
+      "sha256": "14d7016ad68e7394d6e6b78d96cc2ae431c905287b89674cfdf021e79e62b8ba"
+    },
+    {
+      "filename": "WeSpeaker-MODEL-CARD.md",
+      "url": "https://huggingface.co/Wespeaker/wespeaker-voxceleb-resnet34-LM/raw/f0c48c298fd835726c27956a5d617bad7115627e/README.md",
+      "size": 3152,
+      "sha256": "af2f6592a73d1333b872f75c6047f24bd1bb53346c0597edc1544140aa9c7e73"
+    },
+    {
+      "filename": "FlatBuffers-25.12.19-APACHE-2.0.txt",
+      "package": "flatbuffers",
+      "version": "25.12.19",
+      "url": "https://raw.githubusercontent.com/google/flatbuffers/7e163021e59cca4f8e1e35a7c828b5c6b7915953/LICENSE",
+      "size": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    }
+  ],
+  "references": {
+    "wespeaker_inference": "https://github.com/wenet-e2e/wespeaker/blob/9fecd6cb4f47475d01761d87c826298dff4ef18c/wespeaker/bin/infer_onnx.py",
+    "wespeaker_model_license": "https://github.com/wenet-e2e/wespeaker/blob/9fecd6cb4f47475d01761d87c826298dff4ef18c/docs/pretrained.md",
+    "segmentation_export": "https://github.com/k2-fsa/sherpa-onnx/blob/v1.13.8/scripts/pyannote/segmentation/export-onnx.py",
+    "segmentation_powerset": "https://github.com/pyannote/pyannote-audio/blob/3.3.2/pyannote/audio/utils/powerset.py",
+    "runtime_install": "https://onnxruntime.ai/docs/install/"
+  }
+}

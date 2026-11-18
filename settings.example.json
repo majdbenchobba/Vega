@@ -1,0 +1,21 @@
+{
+  "model": "auto/best-free",
+  "provider": "omniroute",
+  "omniroute_keyless": true,
+  "omniroute_base_url": "http://127.0.0.1:20128/v1/chat/completions",
+  "infrastructure_aws_profile": "default",
+  "region": "us-east-1",
+  "reasoning_effort": "low",
+  "max_output_tokens": 4096,
+  "request_timeout_seconds": 90,
+  "max_conversations_per_hour": 60,
+  "port": 8769,
+  "reload_project_registry": true,
+  "selective_memory_release": false,
+  "codex_app_id": "OpenAI.Codex_2p2nqsd0c76g0!App",
+  "codex_process_name": "ChatGPT.exe",
+  "codex_package_path_marker": "\\WindowsApps\\OpenAI.Codex_",
+  "codex_watchdog_enabled": false,
+  "additional_apps": {},
+  "miniapp_brand_assets": []
+}

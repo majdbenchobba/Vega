@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="icon" href="/mini/vega-icon.svg?orb=20261001" type="image/svg+xml">
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="theme-color" content="#0b0c13">
+ <title>Vega</title>
+ <link rel="stylesheet" href="/assets/vegaPresence.css">
+ <link rel="stylesheet" href="/assets/dashboard.css">
+ <link rel="stylesheet" href="/assets/memory-panel.css">
+ <link rel="stylesheet" href="/assets/layout-controls.css">
+ <link rel="stylesheet" href="/assets/reply-renderer.css">
+ <link rel="stylesheet" href="/assets/project-tools.css">
+ <link rel="stylesheet" href="/assets/speaker-profile.css">
+ <link rel="stylesheet" href="/assets/team-panel.css">
+ <link rel="stylesheet" href="/assets/work-overview.css">
+ <link rel="stylesheet" href="/assets/n8n-panel.css">
+ <link rel="stylesheet" href="/assets/vega-refresh.css">
+ <link rel="stylesheet" href="/mini/visuals.css">
+ <link rel="stylesheet" href="/assets/infrastructure.css">
+</head>
+<body class="vega-app">
+<main class="workspace">
+ <aside class="sidebar">
+  <section id="presence" class="vega-presence" data-phase="idle" data-motion="quiet" data-variant="full" aria-labelledby="vega-title">
+   <div class="vega-presence-aurora" aria-hidden="true"></div>
+   <header class="vega-presence-header">
+    <div class="vega-presence-identity-copy"><strong>Vega</strong><small>Independent companion</small></div>
+    <span class="vega-presence-state" role="status"><i aria-hidden="true"></i><span id="presence-state">Connecting</span></span>
+   </header>
+   <div class="vega-presence-stage">
+    <div class="vega-presence-orb" aria-hidden="true">
+     <span class="vega-presence-orbit vega-presence-orbit-outer"></span>
+     <span class="vega-presence-orbit vega-presence-orbit-middle"></span>
+     <span class="vega-presence-orbit vega-presence-orbit-inner"></span>
+     <span class="vega-presence-core"><span class="vega-presence-core-light"></span></span>
+     <span class="vega-presence-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+    </div>
+    <div class="vega-presence-copy"><h1 id="vega-title">Here with you.</h1><p id="voice-detail">One conversation, wherever you are.</p></div>
+    <div class="voice-controls" role="group" aria-label="Vega voice controls">
+     <button id="voice-start" class="primary" type="button" hidden>Resume listening</button>
+     <button id="voice-pause" type="button" hidden>Pause voice</button>
+     <button id="voice-owner-setup" type="button" hidden>Set up my voice</button>
+    </div>
+   </div>
+  </section>
+  <nav aria-label="Vega views">
+   <button type="button" data-view="conversation" aria-current="page">Conversation</button>
+   <button type="button" data-view="work">Projects</button>
+   <button type="button" data-view="infrastructure">Infrastructure</button>
+   <button type="button" data-view="planning">Calendar</button>
+   <button type="button" data-view="memory">Memory</button>
+   <details class="nav-more"><summary title="More views"><span aria-hidden="true">···</span><span class="nav-more-label">More</span></summary>
+    <button type="button" id="open-getting-started">Getting started</button>
+    <button type="button" data-view="briefing">Briefing</button>
+    <button type="button" data-view="automations">Automations</button>
+    <button id="project-tools-view" type="button" data-view="tools" hidden>Project tools</button>
+   </details>
+   <button type="button" data-view="settings">Settings</button>
+  </nav>
+  <div class="sidebar-footer"><span id="connection">Checking the host…</span><button id="compact" type="button">Compact presence</button></div>
+ </aside>
+ <section class="main-pane">
+  <header class="topbar">
+   <div><span class="eyebrow">YOUR SPACE</span><h2 id="view-title">Conversation</h2></div>
+   <div id="work-activity-anchor"><div id="conversation-activity" aria-label="Vega work activity"></div></div>
+  </header>
+  <div id="error" class="error" role="alert" hidden></div>
+  <section data-panel="conversation" class="chat-panel" aria-label="Conversation with Vega">
+   <div class="chat-state"><span id="activity" role="status">Connecting…</span><div class="chat-activity-actions"><button id="cancel-reply" type="button" hidden>Stop reply</button></div></div>
+   <div id="messages" role="log" aria-label="Conversation history" aria-live="polite" aria-relevant="additions"><p class="empty">Tell me what you want to work on.</p></div>
+   <p id="voice-feedback" role="status" hidden></p>
+   <form id="composer">
+    <div id="composer-attachments" class="composer-attachments" aria-label="Draft attachments" hidden></div>
+    <textarea id="message" aria-label="Message Vega" placeholder="Message Vega…" rows="2" maxlength="12000"></textarea>
+    <input id="attachment-picker" type="file" multiple aria-label="Choose files" hidden>
+    <button id="attach-files" type="button" aria-label="Attach files" title="Attach files" disabled><span aria-hidden="true">+</span></button>
+    <button id="send" class="primary" type="submit" aria-label="Send message" title="Send message" disabled><span aria-hidden="true">↑</span></button>
+    <p id="attachment-status" class="composer-status" role="status"></p>
+    <p id="send-status" class="composer-status" role="status"></p>
+   </form>
+   <p class="footnote">Shift + Enter for a new line</p>
+  </section>
+  <section data-panel="briefing" hidden>
+   <div class="section-intro"><h3>Briefing</h3><p id="briefing-detail">What needs your attention.</p></div>
+   <div id="briefing-cards" class="cards"></div>
+   <details><summary>Sources and scope</summary><p>Briefings use local records and observed task state. External calendars appear only after a connection is configured. You can choose each scope in Preferences.</p></details>
+  </section>
+  <section data-panel="planning" hidden>
+   <div class="toolbar"><div class="segmented" aria-label="Calendar view"><button data-calendar-view="month" aria-pressed="true">Month</button><button data-calendar-view="week" aria-pressed="false">Week</button><button data-calendar-view="day" aria-pressed="false">Day</button><button data-calendar-view="agenda" aria-pressed="false">Agenda</button></div><button id="new-plan" class="primary">Add item</button></div>
+   <div class="toolbar"><button id="calendar-prev" aria-label="Previous calendar period">←</button><h3 id="calendar-title"></h3><button id="calendar-next" aria-label="Next calendar period">→</button><button id="calendar-today">Today</button></div>
+   <div id="calendar" class="calendar" aria-label="Calendar"></div>
+   <h3>Reminders</h3><div id="reminders" class="cards"></div>
+  </section>
+  <section data-panel="memory" hidden>
+   <div id="memory-legacy">
+   <div class="section-intro"><h3>Memory</h3><p>Your saved notes and preferences.</p></div>
+   <div class="toolbar"><input id="memory-search" type="search" aria-label="Search memory" placeholder="Search your notes"><button id="new-memory" class="primary">Add memory</button><button id="export-context">Export context</button></div>
+   <div id="memory-cards" class="cards"></div>
+   <div class="quiet-card"><strong>Current context</strong><p id="context-description"></p><p>Project updates are available. Other sources need a connection.</p></div>
+   </div>
+   <div id="memory-workspace" hidden></div>
+  </section>
+  <section data-panel="tools" aria-label="Project tools" hidden>
+   <div id="project-tools-workspace"></div>
+  </section>
+  <section data-panel="work" aria-label="Projects and work" hidden><div id="work-overview-workspace"></div></section>
+  <section data-panel="infrastructure" aria-label="Infrastructure" hidden><div id="infrastructure-workspace"></div></section>
+  <section data-panel="automations" aria-label="Automations" hidden><div id="n8n-workspace"></div></section>
+  <section data-panel="settings" hidden>
+   <form id="preferences" class="settings-form">
+    <h3>Preferences</h3>
+    <div class="settings-profile-fields">
+    <div class="field-row"><label>Name<input name="display_name" maxlength="80" required></label><label>Reply language<input name="language" maxlength="40" placeholder="auto" required></label></div>
+    <label>Conversation style<textarea name="style" rows="2" maxlength="600"></textarea></label>
+    <label>Time zone<input name="timezone" maxlength="80" required></label>
+    </div>
+    <fieldset><legend>Voice and context</legend>
+     <label class="check"><input type="checkbox" role="switch" name="background_listening">Listen automatically when Vega opens</label>
+     <label class="check"><input type="checkbox" role="switch" name="auto_speak">Speak replies to voice messages</label>
+     <label class="check"><input type="checkbox" role="switch" name="memory_enabled">Use my reviewed memories</label>
+     <label class="check"><input type="checkbox" role="switch" name="project_context_enabled">Use project and planning context</label>
+     <label class="check"><input type="checkbox" role="switch" name="reminder_notifications">Notify me about due reminders</label>
+    </fieldset>
+    <details class="settings-extra"><summary>Memory and briefing options</summary>
+    <fieldset id="memory-learning-controls" hidden><legend>Selective memory</legend>
+     <label class="check"><input type="checkbox" role="switch" name="learning_enabled">Learn useful durable details from our conversations</label>
+     <label class="check"><input type="checkbox" role="switch" name="learning_review_required">Review every suggestion before saving</label>
+     <p class="footnote">Review or undo saved memories in Memory. Secrets are excluded; memories grant no permissions.</p>
+    </fieldset>
+    <fieldset><legend>Briefing scopes</legend><div id="briefing-scopes" class="checkbox-grid"></div></fieldset>
+    </details>
+    <div class="toolbar"><button type="submit" class="primary">Save preferences</button><button id="reload-preferences" type="button">Reload settings</button></div><span id="preference-result" role="status"></span>
+   </form>
+   <details id="voice-settings" class="settings-disclosure"><summary>Voice setup</summary><div id="owner-voice-workspace"></div></details>
+   <details class="quiet-card settings-disclosure"><summary>Speech connection and tests</summary><p id="speech-route"></p><p id="speech-verification"></p><p>Listening stops when paused or this page closes.</p>
+    <section id="speech-route-controls" hidden aria-label="Reviewed voice route controls">
+     <details><summary>Edit the saved voice route</summary>
+      <form id="speech-route-form" class="settings-form">
+       <p>AWS Transcribe + Polly</p>
+       <label>Transcription language<select name="transcriptionLanguage" required></select></label>
+       <details><summary>Language details</summary><p>Arabic uses Modern Standard or Gulf Arabic. Tunisian recognition and matching across languages need testing. Auto-detection supports English, French and Italian.</p></details>
+       <div class="field-row"><label>Speech model<select name="speechModelId" required></select></label><label>Voice<select name="voice" required></select></label></div>
+       <details><summary>Profile and region</summary><div class="field-row"><label>Existing AWS CLI profile<input name="awsProfile" maxlength="128" pattern="[A-Za-z0-9_@.+\-]{1,128}" required></label><label>AWS region<input name="awsRegion" maxlength="40" required></label></div><p id="speech-region-hint" class="footnote"></p></details>
+       <div class="toolbar"><button id="speech-route-review" type="submit" class="primary">Review changes</button><button id="speech-route-reload" type="button">Reload saved route</button></div>
+       <p id="speech-route-status" role="status"></p>
+      </form>
+     </details>
+     <div class="voice-test-panel"><h3>Test the saved route</h3><p class="footnote">Voice samples use your paid AWS speech service.</p><p class="footnote">Sample phrase: <span id="speech-test-phrase"></span></p>
+      <div class="toolbar"><button id="speech-check-connection" type="button">Check credentials</button><button id="speech-generate-sample" type="button">Generate voice sample</button><button id="speech-test-microphone" type="button">Record a test phrase</button><button id="speech-test-stop" type="button" disabled>Stop test</button></div>
+      <p id="speech-test-status" role="status">Press Play when ready.</p><audio id="speech-test-audio" controls preload="none" hidden aria-label="Saved-route voice sample"></audio>
+     </div>
+    </section>
+   </details>
+   <details class="quiet-card settings-disclosure"><summary>Connections and diagnostics</summary><div class="toolbar"><button data-command="/open codex">Open Codex</button><button data-command="/apps">Available apps</button><button data-command="/watchdog status">Recovery status</button><button data-command="/help">Help</button><a id="project-controls-link" href="/projects" target="_blank" rel="noopener" hidden>Project requests and receipts</a></div><p id="diagnostics"></p></details>
+  </section>
+ </section>
+</main>
+<dialog id="getting-started-dialog" class="getting-started" aria-labelledby="getting-started-title">
+ <header><span class="eyebrow">FIRST LAUNCH</span><h2 id="getting-started-title">Getting started with Vega</h2></header>
+ <p>Vega runs on your computer. Each installation should have its own project list, session history, and credentials. Folders are not discovered automatically.</p>
+ <ol class="getting-started-steps">
+  <li><strong>Connect a model through OmniRoute.</strong> Configure a provider in your local OmniRoute setup. Free cloud models can be rate-limited or unavailable, so no free model can be promised to work all the time.</li>
+  <li><strong>Choose your folders.</strong> Register only folders you own and want Vega to access. The Copilot agent can read ordinary files in that folder; proposed edits wait for your approval.</li>
+  <li><strong>Know what leaves your computer.</strong> If OmniRoute uses a cloud provider, your prompts and any files the agent reads may be sent to that provider. Check its privacy terms before sharing sensitive material.</li>
+  <li><strong>Start with optional features off.</strong> Voice, background listening, automations, and project work are separate. Enable them only after reviewing their settings.</li>
+ </ol>
+ <p class="getting-started-privacy">A clean download must not include another person's project registry, local state, or keys. Keep your own data in your own installation.</p>
+ <div class="toolbar">
+  <button type="button" id="getting-started-projects" class="primary">Open Projects</button>
+  <button type="button" id="getting-started-settings">Open Settings</button>
+  <button type="button" data-close="getting-started-dialog">Done</button>
+ </div>
+</dialog>
+<dialog id="memory-dialog" aria-labelledby="memory-title"><form id="memory-form"><h2 id="memory-title">Memory</h2><input name="id" type="hidden"><input name="expected_revision" type="hidden" value="0"><label>Title<input name="title" maxlength="160" required></label><label>Note<textarea name="body" rows="5" maxlength="6000" required></textarea></label><label>Scope<select name="project"><option value="">Personal</option></select></label><div class="toolbar"><button type="submit" class="primary">Save memory</button><button type="button" data-close="memory-dialog">Cancel</button><button type="button" id="archive-memory" hidden>Archive</button></div></form></dialog>
+<dialog id="plan-dialog" aria-labelledby="plan-title"><form id="plan-form"><h2 id="plan-title">Plan an item</h2><input name="id" type="hidden"><input name="expected_revision" type="hidden" value="0"><label>Type<select name="kind"><option value="event">Event</option><option value="time-block">Time block</option><option value="reminder">Reminder</option></select></label><label>Title<input name="title" maxlength="200" required></label><label>Notes<textarea name="note" rows="3" maxlength="3000"></textarea></label><div class="field-row"><label>Start / due time<input name="start" type="datetime-local" required></label><label id="end-label">End<input name="end" type="datetime-local"></label></div><div id="event-fields"><label class="check"><input name="allDay" type="checkbox" role="switch">All day</label><label>Repeats<select name="recurrence"><option value="none">Does not repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></label><label>Repeat until (optional)<input name="recurrenceUntil" type="date"></label><p class="footnote">Edits and archiving affect the whole series.</p></div><label>Scope<select name="projectId"><option value="">Personal</option></select></label><p id="plan-staged" role="status"></p><div class="toolbar"><button type="submit" class="primary">Save item</button><button type="button" data-close="plan-dialog">Cancel</button><button type="button" id="archive-plan" hidden>Archive series</button></div></form></dialog>
+<dialog id="speech-review-dialog" aria-labelledby="speech-review-title"><h2 id="speech-review-title">Review voice route changes</h2><p>Saving stops listening and clears old test samples.</p><div class="route-review-table"><table><thead><tr><th>Setting</th><th>Saved</th><th>Proposed</th></tr></thead><tbody id="speech-review-changes"></tbody></table></div><p id="speech-review-error" role="alert"></p><div class="toolbar"><button id="speech-review-save" type="button" class="primary">Save reviewed route</button><button id="speech-review-cancel" type="button">Keep saved route</button></div></dialog>
+<script defer src="/assets/dashboard-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,468 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:9a5756c3-10f8-46f5-96fc-b7038d4df156",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-11-18T17:09:32.619Z",
+    "lifecycles": [
+      {
+        "phase": "build"
+      }
+    ],
+    "tools": [
+      {
+        "vendor": "npm",
+        "name": "cli",
+        "version": "11.11.1"
+      }
+    ],
+    "component": {
+      "bom-ref": "vega-independent-companion@0.1.0",
+      "type": "library",
+      "name": "Vega-0.1.0-release-candidate",
+      "version": "0.1.0",
+      "scope": "required",
+      "purl": "pkg:npm/vega-independent-companion@0.1.0",
+      "properties": [],
+      "externalReferences": []
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "@github/copilot-sdk@1.0.34",
+      "type": "library",
+      "name": "@github/copilot-sdk",
+      "version": "1.0.34",
+      "scope": "required",
+      "author": "GitHub",
+      "description": "TypeScript SDK for programmatic control of GitHub Copilot CLI via JSON-RPC",
+      "purl": "pkg:npm/%40github/copilot-sdk@1.0.34",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@github/copilot-sdk/-/copilot-sdk-1.0.34.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/github/copilot-agent-runtime.git"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "770a9e36147bd653c3773444e1029315799ac7e740cd67e45cae3fe03289059a7e905acaebad33fb87af61dbd2f03c3cc9a42cd4454601aeb7a65adb9fc3123f"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@github/copilot-sdk-win32-x64@1.0.34",
+      "type": "library",
+      "name": "@github/copilot-sdk-win32-x64",
+      "version": "1.0.34",
+      "scope": "optional",
+      "description": "Platform runtime for @github/copilot-sdk (win32-x64)",
+      "purl": "pkg:npm/%40github/copilot-sdk-win32-x64@1.0.34",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@github/copilot-sdk-win32-x64/-/copilot-sdk-win32-x64-1.0.34.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/github/copilot-agent-runtime.git"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "77c1fc0bf501831d3a2482db9fe01ac698cd972822d8ce3c4f8ac706e7e20d81d921ea9d1a4364e08761f5d0c060cfd5cded505d2ef923b920ce805afa9e3dab"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@koromix/koffi-win32-x64@3.3.6",
+      "type": "library",
+      "name": "@koromix/koffi-win32-x64",
+      "version": "3.3.6",
+      "scope": "optional",
+      "author": "Niels Martignène",
+      "description": "Fast and easy-to-use dynamic C FFI (foreign function interface) for Node.js (@koromix/koffi-win32-x64)",
+      "purl": "pkg:npm/%40koromix/koffi-win32-x64@3.3.6",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@koromix/koffi-win32-x64/-/koffi-win32-x64-3.3.6.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/Koromix/koffi"
+        },
+        {
+          "type": "website",
+          "url": "https://koffi.dev/"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "83d282e952902def3c4e381eb9b937ca1bb40a3b6a49e46ae178d6156c54ab8aec3f4ff07cb501a1e212bc6eb41e83e6858429f94ee155df0cb3e6a638c1c3bc"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "entities@8.1.0",
+      "type": "library",
+      "name": "entities",
+      "version": "8.1.0",
+      "scope": "required",
+      "author": "Felix Boehm <me@feedic.com>",
+      "description": "Encode & decode XML and HTML entities with ease & speed",
+      "purl": "pkg:npm/entities@8.1.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/entities/-/entities-8.1.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/fb55/entities.git"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "9312fb9ac21f7d2ba1f5a68500c0fbaf1008b9344c00731e06d8075b6c94756c3bdf664d87831e86417681d8efb5d9a29246883fd6c50c324e3e5b2f9bb6afac"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-2-Clause"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "koffi@3.3.6",
+      "type": "library",
+      "name": "koffi",
+      "version": "3.3.6",
+      "scope": "required",
+      "author": "Niels Martignène",
+      "description": "Fast and easy-to-use dynamic C FFI (foreign function interface) for Node.js",
+      "purl": "pkg:npm/koffi@3.3.6",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/koffi/-/koffi-3.3.6.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/Koromix/koffi"
+        },
+        {
+          "type": "website",
+          "url": "https://koffi.dev/"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "a4fa82660f28e2568bbf3c72486123bbf4f515df9e0894d59c999c1fa875bbdf07151a0143d12890db814a3dcdc4841dce410f4713e71ca8e105590b781f97d2"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "lossless-json@4.3.3",
+      "type": "library",
+      "name": "lossless-json",
+      "version": "4.3.3",
+      "scope": "required",
+      "author": "Jos de Jong",
+      "description": "Parse JSON without risk of losing numeric information",
+      "purl": "pkg:npm/lossless-json@4.3.3",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/lossless-json/-/lossless-json-4.3.3.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/josdejong/lossless-json.git"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "14616b180ac7b2fec146260e7f7ed9462793f4794ac3e2a9bbd1efb69623728384a3c96a3648e7cbc0366007d63565900bef6970b22b2d9f88be228985a1f019"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "marked@18.0.14",
+      "type": "library",
+      "name": "marked",
+      "version": "18.0.14",
+      "scope": "required",
+      "author": "Christopher Jeffrey",
+      "description": "A markdown parser built for speed",
+      "purl": "pkg:npm/marked@18.0.14",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/marked/-/marked-18.0.14.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/markedjs/marked.git"
+        },
+        {
+          "type": "website",
+          "url": "https://marked.js.org"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/markedjs/marked/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "9811cae85047b8102586045ef3cc3d1743b501bc305c951c4226d46c2fd071d4db546003eda5b36bec6ddcdea84ff8c2671dff38c792fbcae7ba21d9710f6cec"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "vscode-jsonrpc@10.0.0",
+      "type": "library",
+      "name": "vscode-jsonrpc",
+      "version": "10.0.0",
+      "scope": "required",
+      "author": "Microsoft Corporation",
+      "description": "A json rpc implementation over streams",
+      "purl": "pkg:npm/vscode-jsonrpc@10.0.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/vscode-jsonrpc/-/vscode-jsonrpc-10.0.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/Microsoft/vscode-languageserver-node.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/microsoft/vscode-languageserver-node/tree/main/jsonrpc"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/Microsoft/vscode-languageserver-node/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "51249fc60d2f0c8a5342a950046c45de6040472a12f1c53b2c72e96d8361e9d389b77d9d96c9313d607422bae1e539654e6c9fee834b02fa83ab39256f0c27a4"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "ws@8.23.0",
+      "type": "library",
+      "name": "ws",
+      "version": "8.23.0",
+      "scope": "required",
+      "author": "Einar Otto Stangvik <einaros@gmail.com> (http://2x.io)",
+      "description": "Simple to use, blazing fast and thoroughly tested websocket client and server for Node.js",
+      "purl": "pkg:npm/ws@8.23.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/ws/-/ws-8.23.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/websockets/ws.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/websockets/ws"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "c029265fc40c3ab2a380ef075b65b20db4d219eaa4a1cc600f34bd891efdac401ec6dcbaff6ab38a5c77020f13a9ff72928a778ab2ca95ed0cb559f9aa3567a1"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "zod@4.6.7",
+      "type": "library",
+      "name": "zod",
+      "version": "4.6.7",
+      "scope": "required",
+      "author": "Colin McDonnell <zod@colinhacks.com>",
+      "description": "TypeScript-first schema declaration and validation library with static type inference",
+      "purl": "pkg:npm/zod@4.6.7",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/zod/-/zod-4.6.7.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/colinhacks/zod.git"
+        },
+        {
+          "type": "website",
+          "url": "https://zod.dev"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/colinhacks/zod/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "83c5b60f6914e9af2e9ed734e777d7d6e5412b333bcaa0315bfdf3c24f37fba472176f9228eb95f9cd30043854c335753da19aa66647fab99c5333dffb7086c2"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "vega-independent-companion@0.1.0",
+      "dependsOn": [
+        "@github/copilot-sdk@1.0.34",
+        "entities@8.1.0",
+        "marked@18.0.14",
+        "ws@8.23.0"
+      ]
+    },
+    {
+      "ref": "@github/copilot-sdk@1.0.34",
+      "dependsOn": [
+        "koffi@3.3.6",
+        "lossless-json@4.3.3",
+        "vscode-jsonrpc@10.0.0",
+        "zod@4.6.7",
+        "@github/copilot-sdk-win32-x64@1.0.34"
+      ]
+    },
+    {
+      "ref": "@github/copilot-sdk-win32-x64@1.0.34",
+      "dependsOn": []
+    },
+    {
+      "ref": "@koromix/koffi-win32-x64@3.3.6",
+      "dependsOn": []
+    },
+    {
+      "ref": "entities@8.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "koffi@3.3.6",
+      "dependsOn": [
+        "@koromix/koffi-win32-x64@3.3.6"
+      ]
+    },
+    {
+      "ref": "lossless-json@4.3.3",
+      "dependsOn": []
+    },
+    {
+      "ref": "marked@18.0.14",
+      "dependsOn": []
+    },
+    {
+      "ref": "vscode-jsonrpc@10.0.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "ws@8.23.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "zod@4.6.7",
+      "dependsOn": []
+    }
+  ]
+}

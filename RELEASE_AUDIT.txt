@@ -1,0 +1,7 @@
+Vega 0.1.0 source release candidate
+Python regression tests: passed (test_conversation)
+UI build: passed; dashboard bundle reproducibility check: passed
+Dependency SBOM: THIRD_PARTY_SBOM.cdx.json
+Private-data allowlist scan: passed
+FFmpeg static package: excluded; voice-note decoding requires separately installed FFmpeg
+Publication and code-signing: not performed

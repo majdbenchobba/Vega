@@ -1,0 +1,2 @@
+# Reproduce the IANA time-zone data used by this Windows installation's tests.
+tzdata==2025.2

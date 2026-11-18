@@ -1,0 +1,165 @@
+.speaker-profile-panel {
+  --sp-surface: var(--surface, #13141e);
+  --sp-line: var(--line, #303244);
+  --sp-ink: var(--ink, #f2f0f8);
+  --sp-muted: var(--muted, #b1adbd);
+  --sp-accent: var(--accent, #b69aff);
+  --sp-mint: var(--mint, #7ce0cf);
+  color-scheme: dark;
+  color: var(--sp-ink);
+  font: 15px/1.6 "Segoe UI", system-ui, sans-serif;
+  text-align: left;
+  min-width: 0;
+  max-width: 100%;
+  padding-bottom: 28px;
+}
+.speaker-profile-panel *,
+.speaker-profile-panel *::before,
+.speaker-profile-panel *::after { box-sizing: border-box; }
+.speaker-profile-panel [hidden] { display: none !important; }
+.speaker-profile-panel :is(h2, h3, h4) { color: var(--sp-ink); line-height: 1.3; overflow-wrap: anywhere; }
+.speaker-profile-panel h2 { margin: 0 0 10px; font-size: 28px; }
+.speaker-profile-panel h3 { margin: 0 0 14px; font-size: 21px; }
+.speaker-profile-panel h4 { margin: 0 0 10px; font-size: 16px; }
+.speaker-profile-panel p { margin: 10px 0; color: var(--sp-muted); overflow-wrap: anywhere; }
+.speaker-profile-panel .sp-header { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
+.speaker-profile-panel .sp-header > div { flex: 1 1 300px; min-width: 0; max-width: 72ch; }
+.speaker-profile-panel .sp-body { display: grid; gap: 16px; min-width: 0; }
+.speaker-profile-panel .sp-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--sp-line);
+  border-radius: 16px;
+  background: var(--sp-surface);
+}
+.speaker-profile-panel .sp-card > p { max-width: 85ch; }
+.speaker-profile-panel .sp-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 2px 0; }
+.speaker-profile-panel .sp-summary :is(p,.sp-badge) { margin: 0; }
+.speaker-profile-panel .sp-summary [role="alert"]:not(:empty) { flex-basis: 100%; }
+.speaker-profile-panel .sp-hint { font-size: 13px; color: var(--sp-muted); }
+.speaker-profile-panel .sp-badge {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 6px;
+  padding: 3px 10px;
+  border: 1px solid #504765;
+  border-radius: 999px;
+  background: #252133;
+  color: #ddd0f8;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.speaker-profile-panel .sp-badge[data-state="passed"] { border-color: #376955; color: #a1efce; background: #152b23; }
+.speaker-profile-panel .sp-badge[data-state="failed"] { border-color: #815353; color: #ffd0cd; background: #352326; }
+.speaker-profile-panel .sp-consent-text { white-space: pre-wrap; padding: 14px 16px; border: 1px solid var(--sp-line); border-radius: 10px; background: #0e1019; color: var(--sp-ink); }
+.speaker-profile-panel .sp-consent { display: flex; align-items: flex-start; gap: 12px; margin: 18px 0; max-width: 85ch; line-height: 1.6; cursor: pointer; }
+.speaker-profile-panel .sp-consent input { appearance: auto; flex: 0 0 auto; width: 20px; height: 20px; margin: 3px 0 0; accent-color: var(--sp-accent); }
+.speaker-profile-panel .sp-consent span { min-width: 0; overflow-wrap: anywhere; }
+.speaker-profile-panel .sp-enrollment-setup { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.speaker-profile-panel .sp-enrollment-setup > div { min-width: 0; }
+.speaker-profile-panel .sp-enrollment-setup p { max-width: 85ch; }
+.speaker-profile-panel .sp-clips { list-style: none; padding: 0; margin: 24px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.speaker-profile-panel .sp-clip { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding: 18px; border: 1px solid var(--sp-line); border-radius: 12px; background: #10111b; }
+.speaker-profile-panel .sp-clip > :is(.sp-status, .sp-error) { width: 100%; margin: 14px 0 0; font-size: 13px; }
+.speaker-profile-panel .sp-reading { flex: 1; margin: 12px 0 20px; padding-left: 12px; border-left: 2px solid #65577e; color: #e4ddec; font-size: 15px; line-height: 1.8; overflow-wrap: anywhere; }
+.speaker-profile-panel .sp-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; }
+.speaker-profile-panel .sp-button {
+  appearance: none;
+  min-width: 0;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 11px 16px;
+  border: 1px solid var(--sp-line);
+  border-radius: 10px;
+  background: #1b1c2a;
+  color: var(--sp-ink);
+  font: 600 14px/1.5 "Segoe UI", system-ui, sans-serif;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.speaker-profile-panel .sp-button:hover:not(:disabled) { background: #282338; border-color: var(--sp-accent); }
+.speaker-profile-panel .sp-primary { background: var(--sp-accent); color: #1a112b; border-color: transparent; }
+.speaker-profile-panel .sp-primary:hover:not(:disabled) { background: #c6b0fa; }
+.speaker-profile-panel .sp-danger { color: #ffcfcb; border-color: #734447; background: #302126; }
+.speaker-profile-panel .sp-danger:hover:not(:disabled) { background: #482a30; border-color: #df9696; }
+.speaker-profile-panel :disabled { opacity: .55; cursor: not-allowed; }
+.speaker-profile-panel :is(button, input, audio):focus-visible,
+.speaker-profile-panel [tabindex="-1"]:focus { outline: 3px solid var(--sp-mint); outline-offset: 4px; }
+.speaker-profile-panel .sp-cases { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 24px; }
+.speaker-profile-panel .sp-case { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding: 20px; border: 1px solid var(--sp-line); border-radius: 12px; background: #10111b; }
+.speaker-profile-panel .sp-case > p:not(.sp-status) { margin-bottom: 12px; }
+.speaker-profile-panel .sp-case > .sp-button { margin-top: auto; }
+.speaker-profile-panel .sp-help { width: 100%; margin: 12px 0 0; font-size: 13px; }
+.speaker-profile-panel :is(.sp-help, .sp-replace) > summary { cursor: pointer; color: var(--sp-muted); }
+.speaker-profile-panel .sp-replace[open] > summary { margin-bottom: 16px; }
+.speaker-profile-panel .sp-help > p { white-space: pre-wrap; }
+.speaker-profile-panel summary:focus-visible { outline: 2px solid var(--sp-accent); outline-offset: 4px; border-radius: 4px; }
+.speaker-profile-panel .sp-case[data-case="playback"] { grid-column: 1 / -1; }
+@media (min-width: 1300px) {
+  .speaker-profile-panel .sp-cases { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .speaker-profile-panel .sp-case[data-case="owner"] { grid-column: span 2; }
+  .speaker-profile-panel .sp-case[data-case="playback"] { grid-column: auto; }
+}
+.speaker-profile-panel .sp-playback { padding: 22px 0 0; margin-top: 24px; border-top: 1px solid var(--sp-line); }
+.speaker-profile-panel .sp-playback p { max-width: 85ch; }
+.speaker-profile-panel .sp-progress { min-width: 0; width: 100%; padding: 16px 18px; margin: 20px 0; border: 1px solid #524165; border-radius: 10px; background: #201a2e; }
+.speaker-profile-panel .sp-progress .sp-button { margin-top: 16px; }
+.speaker-profile-panel progress { display: block; width: 100%; height: 12px; margin-top: 12px; accent-color: var(--sp-accent); }
+.speaker-profile-panel meter { display: block; width: 100%; height: 16px; accent-color: var(--sp-mint); }
+.speaker-profile-panel .sp-device-select {
+  display: block; width: 100%; min-height: 44px; margin: 8px 0 12px;
+  padding: 10px; border: 1px solid var(--sp-line); border-radius: 8px;
+  background: var(--sp-surface); color: var(--sp-ink); font: inherit;
+}
+.speaker-profile-panel :is(.sp-input-comparison, .sp-microphone-options, .sp-comparison-results) { width: 100%; margin: 14px 0; }
+.speaker-profile-panel :is(.sp-input-comparison, .sp-microphone-options, .sp-comparison-results) > summary { cursor: pointer; font-size: 13px; }
+.speaker-profile-panel .sp-comparison-row { padding: 14px 0; border-bottom: 1px solid var(--sp-line); }
+.speaker-profile-panel .sp-comparison-row p { margin: 8px 0; white-space: pre-wrap; font-size: 13px; }
+.speaker-profile-panel .sp-comparison-row small { display: block; margin-top: 4px; }
+.speaker-profile-panel .sp-comparison-results > small { display: block; margin-top: 12px; }
+.speaker-profile-panel .sp-status { color: #a0e6d7; white-space: pre-wrap; }
+.speaker-profile-panel .sp-error,
+.speaker-profile-panel .sp-notice { padding: 14px 16px; border: 1px solid #79524b; border-radius: 10px; color: #ffd4c5; background: #30211e; white-space: pre-wrap; overflow-wrap: anywhere; }
+.speaker-profile-panel .sp-notice { border-color: #746139; color: #f3dda8; background: #292418; }
+.speaker-profile-panel :is(.sp-error, .sp-status):empty { display: none; }
+.speaker-profile-panel .sp-delete-dialog {
+  width: min(480px, calc(100% - 32px));
+  max-height: calc(100% - 48px);
+  overflow-y: auto;
+  padding: 26px;
+  border: 1px solid #716078;
+  border-radius: 16px;
+  background: #18151f;
+  color: var(--sp-ink);
+  box-shadow: 0 24px 90px #0008;
+  text-align: left;
+}
+.speaker-profile-panel .sp-delete-dialog::backdrop { background: #070711bc; }
+.speaker-profile-panel .sp-delete-dialog .sp-actions { justify-content: flex-end; margin-top: 24px; }
+@media (max-width: 860px) {
+  .speaker-profile-panel .sp-clips { grid-template-columns: minmax(0, 1fr); }
+  .speaker-profile-panel .sp-reading { max-width: 75ch; }
+}
+@media (max-width: 1100px) {
+  .speaker-profile-panel .sp-enrollment-setup { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+}
+@media (max-width: 600px) {
+  .speaker-profile-panel { font-size: 15px; }
+  .speaker-profile-panel h2 { font-size: 25px; }
+  .speaker-profile-panel h3 { font-size: 19px; }
+  .speaker-profile-panel .sp-body { gap: 18px; }
+  .speaker-profile-panel .sp-card { padding: 18px 14px; }
+  .speaker-profile-panel .sp-cases { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .speaker-profile-panel .sp-case { padding: 18px 14px; }
+  .speaker-profile-panel .sp-actions { align-items: stretch; }
+  .speaker-profile-panel .sp-actions > button { flex: 1 1 200px; }
+  .speaker-profile-panel .sp-delete-dialog { padding: 22px 18px; }
+  .speaker-profile-panel .sp-delete-dialog .sp-actions { flex-direction: column; }
+  .speaker-profile-panel .sp-delete-dialog .sp-actions > button { flex: 0 0 auto; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .speaker-profile-panel * { scroll-behavior: auto; }
+}

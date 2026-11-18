@@ -1,0 +1,882 @@
+/*
+  Vega refresh — one light in the room
+
+  Presentation layer, loaded last after n8n-panel.css. The October 1 release
+  also changes navigation and progressive disclosure in the dashboard markup.
+  Restore the matching source checkpoint for a complete layout rollback.
+
+  The idea: Vega's orb is the only light on the screen, and its colour is its
+  state. Violet rests, blue works, teal listens, amber needs you. Everything
+  else is quiet graphite, so the one light reads at a glance.
+
+  Based on the 2026-09-30 design, simplified for the 2026-10-01 release.
+
+  Most selectors start with .workspace.layout-refined (0,2,0) so they win
+  over the stylesheets that load before this one without !important. The
+  collapsed rail adds [data-sidebar-collapsed="true"] (0,3,0).
+*/
+
+/* 1. Tokens and base ------------------------------------------------------ */
+
+:root{
+  color-scheme:dark;
+  /* Surfaces, darkest to lightest */
+  --vr-night:#0b0c13;   /* sidebar; today's background */
+  --vr-well:#0d0e13;    /* code and read-only wells */
+  --vr-room:#111319;    /* the main canvas */
+  --vr-sheet:#15171d;   /* dialogs and sheets */
+  --vr-lifted:#1a1c24;  /* composer, your bubbles, grouped lists, buttons */
+  --vr-hover:#22242c;   /* hover and the current item */
+  /* Lines */
+  --vr-edge:rgb(255 255 255/7%);
+  --vr-hairline:#2b2d36;
+  --vr-field-line:#30323b;
+  --vr-rule:#3a3c46;
+  /* Text */
+  --vr-faint:#898c95;
+  --vr-muted:#aaacb5;
+  --vr-ink:#edeef3;
+  /* The one light, and its phases */
+  --vr-violet:#b69aff;
+  --vr-violet-hover:#c5b0ff;
+  --vr-on-violet:#1a1325;
+  --vr-blue:#6f9eff;
+  --vr-teal:#66e0d5;
+  --vr-amber:#d7a85e;
+  /* A neutral light for primary actions, checks and focus */
+  --vr-light:#e4e5eb;
+  --vr-light-hover:#f3f4f7;
+  --vr-on-light:#111319;
+  --vr-focus:rgb(237 238 243/82%);
+  /* Button fill. It steps up one level inside lifted containers. */
+  --vr-button:var(--vr-lifted);
+  --vr-button-hover:var(--vr-hover);
+  /* Type: Windows 11 ships Segoe UI Variable with optical sizes */
+  --vr-font:"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+  --vr-font-display:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  --vr-font-small:"Segoe UI Variable Small","Segoe UI",system-ui,sans-serif;
+  --vr-font-code:"Cascadia Code","Cascadia Mono",Consolas,monospace;
+  /* The dashboard's own variables, remapped. The panels chain to these. */
+  --bg:var(--vr-room);
+  --surface:var(--vr-lifted);
+  --line:var(--vr-hairline);
+  --ink:var(--vr-ink);
+  --muted:var(--vr-muted);
+  --accent:var(--vr-violet);
+  --mint:#d9dbe3;
+}
+
+body{background:var(--vr-room);color:var(--vr-ink);font:14px/1.5 var(--vr-font)}
+h1,h2,h3{letter-spacing:-.01em}
+::placeholder{color:var(--vr-faint);opacity:1}
+
+/* Visually hidden, still read aloud */
+.workspace.layout-refined .layout-sidebar-toggle .layout-control-label,
+.workspace.layout-refined .sidebar .vega-presence-identity-copy small,
+.workspace.layout-refined .sidebar-footer #compact .layout-control-label,
+.workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar .vega-presence-state,
+.workspace.layout-refined #messages .message .who{
+  position:absolute;width:1px;height:1px;min-height:0;margin:-1px;padding:0;
+  overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0
+}
+
+/* Buttons are borderless fills. Inside lifted containers they sit one step up. */
+.workspace.layout-refined :is(.cards,.mp-card,.mp-learning,.mp-activity-row,.mp-preview-row,.pt-card,.sp-card,.n8n-connection,.n8n-design,.wo-project-summary,.wo-card),
+dialog{--vr-button:var(--vr-hover);--vr-button-hover:#2a2c35}
+
+button{background-color:var(--vr-button);border-color:transparent}
+button:hover{background-color:var(--vr-button);border-color:transparent}
+button:hover:not(:disabled){background-color:var(--vr-button-hover)}
+
+.workspace.layout-refined .memory-panel .mp-button,
+.workspace.layout-refined .project-tools-panel .pt-button,
+.workspace.layout-refined .speaker-profile-panel .sp-button,
+.workspace.layout-refined .activity-sheet button{
+  border-color:transparent;border-radius:10px;background:var(--vr-button);color:var(--vr-ink);
+  font-family:var(--vr-font);font-weight:500
+}
+.workspace.layout-refined .memory-panel .mp-button:hover:not(:disabled),
+.workspace.layout-refined .project-tools-panel .pt-button:hover:not(:disabled),
+.workspace.layout-refined .speaker-profile-panel .sp-button:hover:not(:disabled),
+.workspace.layout-refined .activity-sheet button:hover:not(:disabled){
+  border-color:transparent;background:var(--vr-button-hover)
+}
+
+/* Primary actions are a neutral light, so violet stays with Vega. */
+.primary{border-color:transparent;background:var(--vr-light);color:var(--vr-on-light);font-weight:600}
+.primary:hover{background-color:var(--vr-light)}
+.primary:hover:not(:disabled){background-color:var(--vr-light-hover)}
+
+.workspace.layout-refined .memory-panel .mp-primary,
+.workspace.layout-refined .project-tools-panel .pt-primary,
+.workspace.layout-refined .speaker-profile-panel .sp-primary,
+.workspace.layout-refined .activity-sheet button.team-primary{
+  border-color:transparent;background:var(--vr-light);color:var(--vr-on-light);font-weight:600
+}
+.workspace.layout-refined .memory-panel .mp-primary:hover:not(:disabled),
+.workspace.layout-refined .project-tools-panel .pt-primary:hover:not(:disabled),
+.workspace.layout-refined .speaker-profile-panel .sp-primary:hover:not(:disabled),
+.workspace.layout-refined .activity-sheet button.team-primary:hover:not(:disabled){
+  background:var(--vr-light-hover)
+}
+
+.workspace.layout-refined .speaker-profile-panel .sp-danger{background:#302126;border-color:#734447;color:#ffcfcb}
+.workspace.layout-refined .speaker-profile-panel .sp-danger:hover:not(:disabled){background:#482a30;border-color:#df9696}
+
+/* Links are ink with a soft underline. */
+a{color:var(--vr-ink);text-decoration-line:underline;text-decoration-color:rgb(237 238 243/38%);text-underline-offset:3px}
+a:hover{text-decoration-color:currentColor}
+
+/* Fields */
+input,select,textarea{background-color:var(--vr-lifted);border-color:var(--vr-field-line);border-radius:10px;color:var(--vr-ink)}
+.workspace.layout-refined .memory-panel :is(input,select),
+.workspace.layout-refined .project-tools-panel :is(input,select,textarea),
+.workspace.layout-refined .speaker-profile-panel :is(input,select,textarea){
+  background-color:var(--vr-lifted);border-color:var(--vr-field-line);border-radius:10px;color:var(--vr-ink)
+}
+/* Fields inside a lifted card sit back down into the room. */
+.workspace.layout-refined :is(.mp-card,.pt-card,.sp-card,.n8n-connection,.n8n-design,.wo-project-summary) :is(input,select,textarea){background-color:var(--vr-room)}
+.workspace.layout-refined .project-tools-panel textarea:is([readonly],:disabled){background:var(--vr-well);color:var(--vr-muted)}
+.workspace.layout-refined input[type="file"]::file-selector-button{border:0;border-radius:10px;background:var(--vr-hover);color:var(--vr-ink)}
+
+/* Checks and progress use the neutral light. */
+.check input,
+.n8n-approval input,
+.team-consent input,
+.workspace.layout-refined .speaker-profile-panel .sp-consent input,
+.formatted-reply .reply-task-item > input,
+.formatted-reply .reply-task-item > p > input,
+.workspace.layout-refined .speaker-profile-panel progress,
+.workspace.layout-refined .wo-card progress{accent-color:var(--vr-light)}
+.workspace.layout-refined .wo-card progress::-webkit-progress-bar{background:var(--vr-hairline)}
+.workspace.layout-refined .wo-card progress::-webkit-progress-value{background:#d9dbe3}
+.workspace.layout-refined .wo-card progress::-moz-progress-bar{background:#d9dbe3}
+
+/* One focus ring everywhere */
+:is(button,input,textarea,select,summary,a,[tabindex]):focus-visible{outline:2px solid var(--vr-focus);outline-offset:2px}
+.workspace .vega-presence :is(button,[role="button"]):focus-visible,
+.workspace.layout-refined .work-activity.team-panel :is(button,select,summary,input,pre):focus-visible,
+.workspace .formatted-reply a:focus-visible{outline:2px solid var(--vr-focus);outline-offset:2px}
+
+/* Panel variables: the panels' accents become the neutral light. */
+.workspace.layout-refined .memory-panel{--mp-accent:var(--vr-light);--mp-mint:#d9dbe3;font-family:var(--vr-font)}
+.workspace.layout-refined .project-tools-panel{--pt-accent:var(--vr-light);--pt-mint:#d9dbe3;font-family:var(--vr-font)}
+.workspace.layout-refined .speaker-profile-panel{--sp-accent:var(--vr-light);--sp-mint:#d9dbe3;font-family:var(--vr-font)}
+.workspace.layout-refined .work-activity.team-panel{font-family:var(--vr-font);color:var(--vr-ink)}
+
+.workspace.layout-refined :is(.memory-panel,.project-tools-panel,.speaker-profile-panel) h2{font:600 24px/1.25 var(--vr-font-display);letter-spacing:-.01em}
+.workspace.layout-refined :is(.memory-panel,.project-tools-panel,.speaker-profile-panel) h3{font:600 18px/1.3 var(--vr-font-display);letter-spacing:-.005em}
+.workspace.layout-refined .project-tools-panel .pt-kind{color:var(--vr-faint);letter-spacing:0}
+
+/* Context notes become a quiet rule on the left. */
+.workspace.layout-refined .memory-panel .mp-context,
+.workspace.layout-refined .project-tools-panel .pt-context,
+.workspace.layout-refined .speaker-profile-panel .sp-info{border-left:2px solid var(--vr-rule);background:#16181f}
+.workspace.layout-refined .speaker-profile-panel .sp-info strong{color:var(--vr-ink)}
+.workspace.layout-refined .speaker-profile-panel .sp-info p{color:var(--vr-muted)}
+
+/* Status lines are muted text, not mint. */
+.workspace.layout-refined .memory-panel .mp-status,
+.workspace.layout-refined .project-tools-panel .pt-status,
+.workspace.layout-refined .speaker-profile-panel .sp-status,
+.workspace.layout-refined .n8n-status,
+.workspace.layout-refined .n8n-notice,
+.workspace.layout-refined #speech-route-status,
+.workspace.layout-refined #speech-test-status,
+dialog #plan-staged,
+.workspace.layout-refined .settings-form [role="status"],
+.workspace .reply-code-header .reply-copy-status{color:var(--vr-muted)}
+
+/* Panel cards and rows: lifted, no outline */
+.workspace.layout-refined .memory-panel :is(.mp-card,.mp-learning,.mp-activity-row,.mp-preview-row),
+.workspace.layout-refined .memory-panel .mp-stats > div,
+.workspace.layout-refined .project-tools-panel .pt-card,
+.workspace.layout-refined .speaker-profile-panel .sp-card{background:var(--vr-lifted);border-color:transparent}
+.workspace.layout-refined .memory-panel .mp-empty{border:0;padding:12px 0;color:var(--vr-faint);background:transparent}
+.workspace.layout-refined .speaker-profile-panel :is(.sp-clip,.sp-case,.sp-consent-text),
+.workspace.layout-refined .project-tools-panel .pt-code,
+.workspace.layout-refined .memory-panel .mp-preview{border-color:var(--vr-hairline);background:var(--vr-well)}
+
+/* Badges are neutral. Only the ones that carry a result keep their colour. */
+.workspace.layout-refined .memory-panel .mp-badge,
+.workspace.layout-refined .project-tools-panel .pt-badge,
+.workspace.layout-refined .speaker-profile-panel .sp-badge{background:var(--vr-hover);border-color:var(--vr-rule);color:var(--vr-muted)}
+.workspace.layout-refined .memory-panel .mp-badge-subtle{border-color:var(--vr-hairline);background:transparent;color:var(--vr-muted)}
+.workspace.layout-refined .memory-panel .mp-badge-review{border-color:#685633;background:#2e2618;color:#f7dca4}
+.workspace.layout-refined .project-tools-panel .pt-badge[data-state="applied"]{border-color:#34584e;background:#142923;color:#a0eddf}
+.workspace.layout-refined .project-tools-panel .pt-badge:is([data-state="failed"],[data-state="uncertain"],[data-state="interrupted"],[data-state="stale"]){border-color:#735247;background:#352623;color:#ffd0b9}
+.workspace.layout-refined .speaker-profile-panel .sp-badge[data-state="passed"]{border-color:#376955;background:#152b23;color:#a1efce}
+.workspace.layout-refined .speaker-profile-panel .sp-badge[data-state="failed"]{border-color:#815353;background:#352326;color:#ffd0cd}
+
+/* Selection states */
+.workspace.layout-refined .memory-panel .mp-preview-row[data-selected="true"]{border-color:rgb(228 229 235/40%);background:#1f2129}
+.workspace.layout-refined .memory-panel .mp-select-record[aria-pressed="true"]{border-color:transparent;background:var(--vr-light);color:var(--vr-on-light)}
+.workspace.layout-refined .memory-panel .mp-select-record[aria-pressed="true"]:hover:not(:disabled){background:var(--vr-light-hover)}
+.workspace.layout-refined .memory-panel .mp-link-button{border-color:transparent;background:transparent;color:var(--vr-ink);text-decoration:underline;text-decoration-color:rgb(237 238 243/38%);text-underline-offset:3px}
+.workspace.layout-refined .memory-panel .mp-link-button:hover:not(:disabled){background:transparent;text-decoration-color:currentColor}
+.workspace.layout-refined .project-tools-panel .pt-breadcrumb .pt-button{background:transparent}
+.workspace.layout-refined .project-tools-panel .pt-breadcrumb .pt-button:hover:not(:disabled){background:var(--vr-hover)}
+.workspace.layout-refined .project-tools-panel .pt-proposal-list [aria-current="true"]{border-color:transparent;background:var(--vr-hover)}
+.workspace.layout-refined .speaker-profile-panel .sp-reading{border-left-color:var(--vr-rule);color:var(--vr-ink)}
+.workspace.layout-refined .speaker-profile-panel .sp-progress{border-color:var(--vr-hairline);background:var(--vr-lifted)}
+.workspace.layout-refined .project-tools-panel .pt-path{color:var(--vr-ink)}
+
+/* Fieldsets lose their boxes; legends become small headings. */
+:is(.workspace.layout-refined,dialog) fieldset{margin:0;padding:0;border:0;border-radius:0;gap:14px}
+:is(.workspace.layout-refined,dialog) legend{margin:0;padding:0 0 10px;font:600 14px/1.4 var(--vr-font);color:var(--vr-ink)}
+
+/* 2. Presence phase colours ----------------------------------------------
+   Violet rests and speaks, blue works, teal listens, amber needs you.
+   "unavailable" keeps the grey defined in vegaPresence.css. */
+
+.vega-presence,
+.vega-presence[data-phase="idle"],
+.vega-presence[data-phase="speaking"]{
+  --vega-presence-accent:var(--vr-violet);
+  --vega-presence-accent-rgb:182, 154, 255;
+  --vega-presence-secondary:#dcd0ff;
+  --vega-presence-secondary-rgb:220, 208, 255;
+}
+.vega-presence:is([data-phase="thinking"],[data-phase="transcribing"],[data-phase="acting"]){
+  --vega-presence-accent:var(--vr-blue);
+  --vega-presence-accent-rgb:111, 158, 255;
+  --vega-presence-secondary:#b3ccff;
+  --vega-presence-secondary-rgb:179, 204, 255;
+}
+.vega-presence[data-phase="listening"]{
+  --vega-presence-accent:var(--vr-teal);
+  --vega-presence-accent-rgb:102, 224, 213;
+  --vega-presence-secondary:#b5f1eb;
+  --vega-presence-secondary-rgb:181, 241, 235;
+}
+.vega-presence[data-phase="attention"]{
+  --vega-presence-accent:var(--vr-amber);
+  --vega-presence-accent-rgb:215, 168, 94;
+  --vega-presence-secondary:#f0d6a8;
+  --vega-presence-secondary-rgb:240, 214, 168;
+}
+
+/* 3. Sidebar and presence ------------------------------------------------ */
+
+.workspace.layout-refined > .sidebar{background:var(--vr-night);border-right:1px solid rgb(255 255 255/4.5%)}
+
+/* The collapse toggle is a small icon in the top-right corner. */
+.workspace.layout-refined .layout-sidebar-tools{position:absolute;top:22px;right:12px;z-index:3;padding:0;background:transparent}
+.workspace.layout-refined .layout-sidebar-toggle{
+  width:32px;height:32px;min-height:32px;padding:0;justify-content:center;gap:0;
+  border:0;border-radius:8px;background:transparent;color:var(--vr-faint)
+}
+.workspace.layout-refined .layout-sidebar-toggle:hover{background:var(--vr-hover);color:var(--vr-ink)}
+.workspace.layout-refined .layout-sidebar-toggle .layout-control-icon{width:18px;height:18px}
+
+/* Presence is one compact row: orb, name, state. */
+.workspace.layout-refined .sidebar .vega-presence{
+  display:grid;grid-template-columns:40px minmax(0,1fr);grid-template-rows:auto auto;
+  column-gap:12px;row-gap:0;align-items:center;
+  min-height:0;max-height:none;padding:18px 20px 14px;background:transparent;overflow:visible
+}
+.workspace.layout-refined .sidebar :is(.vega-presence-header,.vega-presence-stage){display:contents}
+.workspace.layout-refined .sidebar .vega-presence-orb{display:grid;grid-column:1;grid-row:1/span 2;width:40px;height:40px}
+.workspace.layout-refined .sidebar .vega-presence-identity-copy{display:block;grid-column:2;grid-row:1;align-self:end;min-width:0;margin-inline-end:36px}
+.workspace.layout-refined .sidebar .vega-presence-identity-copy strong{
+  display:block;font:600 15px/1.25 var(--vr-font);letter-spacing:0;text-transform:none;color:var(--vr-ink)
+}
+.workspace.layout-refined .sidebar .vega-presence-state{
+  display:block;grid-column:2;grid-row:2;align-self:start;min-width:0;max-width:none;margin:0 36px 0 0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--vr-muted);font-size:13px;line-height:1.4
+}
+.workspace.layout-refined .sidebar .vega-presence-state > i{display:none}
+.workspace.layout-refined .sidebar .vega-presence:not([data-phase="idle"]):not([data-phase="unavailable"]) .vega-presence-state{color:var(--vega-presence-accent)}
+.workspace.layout-refined .sidebar .vega-presence-copy{grid-column:1/-1;grid-row:3;min-width:0;max-width:none;margin-top:12px}
+.workspace.layout-refined .sidebar .vega-presence-copy p{margin:0;color:var(--vr-faint);font:12px/1.5 var(--vr-font-small);text-wrap:pretty}
+
+.workspace.layout-refined .sidebar .voice-controls{
+  display:flex;flex-wrap:wrap;justify-content:flex-start;gap:6px;
+  grid-column:1/-1;grid-row:4;width:auto;max-width:none;margin-top:12px
+}
+.workspace.layout-refined .sidebar .voice-controls:not(:has(> button:not([hidden]))){display:none}
+.workspace.layout-refined .sidebar .voice-controls button{
+  gap:8px;min-height:32px;padding:6px 12px;border:0;border-radius:10px;
+  background:var(--vr-lifted);color:var(--vr-ink);font-size:13px;font-weight:500;line-height:1.3
+}
+.workspace.layout-refined .sidebar .voice-controls button:hover:not(:disabled){background:var(--vr-hover)}
+.workspace.layout-refined .sidebar .voice-controls .layout-control-icon{width:16px;height:16px}
+
+/* 4. The mini orb ----------------------------------------------------------
+   Small planets circle on two rings while the resting core stays steady.
+   Working states keep their quicker orbit and soft pulse. */
+
+.workspace.layout-refined .sidebar .vega-presence-orb :is(.vega-presence-orbit-outer,.vega-presence-orbit-inner,.vega-presence-core-light){display:none}
+.workspace.layout-refined .sidebar .vega-presence-orb .vega-presence-orbit-outer{display:block;inset:-10%;border:1px solid rgba(var(--vega-presence-accent-rgb),.25)}
+.workspace.layout-refined .sidebar .vega-presence[data-phase="idle"] .vega-presence-core{background:radial-gradient(circle at 38% 30%,#d5f7ff,#84becd 35%,#66619e 75%);inset:27%}
+.workspace.layout-refined .sidebar .vega-presence[data-phase="idle"] .vega-presence-copy{display:none}
+.workspace.layout-refined .sidebar .vega-presence-orb .vega-presence-orbit-middle{inset:0;border:1px solid rgba(var(--vega-presence-accent-rgb),.28);box-shadow:none}
+.workspace.layout-refined .sidebar .vega-presence-orb .vega-presence-orbit-middle::after{display:none}
+.workspace.layout-refined .sidebar .vega-presence-orb .vega-presence-orbit-middle::before{box-shadow:0 0 6px rgba(var(--vega-presence-accent-rgb),.8)}
+.workspace.layout-refined .sidebar .vega-presence-orb .vega-presence-core{
+  inset:18%;
+  box-shadow:inset -4px -5px 9px rgba(5,6,11,.5),inset 3px 3px 6px rgba(255,255,255,.08),
+    0 0 10px rgba(var(--vega-presence-accent-rgb),.45),0 0 22px rgba(var(--vega-presence-accent-rgb),.18)
+}
+.workspace.layout-refined .sidebar .vega-presence-orb::before{
+  content:"";position:absolute;inset:8%;border-radius:50%;pointer-events:none;opacity:.8;
+  background:radial-gradient(closest-side,rgba(var(--vega-presence-accent-rgb),.38),transparent)
+}
+.workspace.layout-refined .sidebar .vega-presence-orb .vega-presence-wave{inset:18%;gap:2px;opacity:0}
+.workspace.layout-refined .sidebar .vega-presence-orb .vega-presence-wave > i{width:2px;height:24%;animation:none}
+.workspace.layout-refined .sidebar .vega-presence-orb .vega-presence-wave > i:is(:nth-child(-n+2),:nth-child(n+8)){display:none}
+.workspace.layout-refined .sidebar .vega-presence-orb :is(.vega-presence-orbit,.vega-presence-core){animation:none}
+.workspace.layout-refined .sidebar .vega-presence-orb .vega-presence-orbit-outer{animation:vr-spin 22s linear infinite}
+.workspace.layout-refined .sidebar .vega-presence-orb .vega-presence-orbit-middle{animation:vr-spin 16s linear infinite reverse;animation-delay:-5s}
+
+/* Working: the inner orbit speeds up and the core breathes. */
+.workspace.layout-refined .sidebar .vega-presence:is([data-phase="thinking"],[data-phase="transcribing"],[data-phase="acting"]) .vega-presence-orbit-middle{animation:vr-spin 3s linear infinite}
+.workspace.layout-refined .sidebar .vega-presence:is([data-phase="thinking"],[data-phase="transcribing"],[data-phase="acting"]) .vega-presence-core{animation:vega-presence-core-breathe 2.4s ease-in-out infinite}
+.workspace.layout-refined .sidebar .vega-presence:is([data-phase="thinking"],[data-phase="transcribing"],[data-phase="acting"]) .vega-presence-orb::before{animation:vr-breathe 2.4s ease-in-out infinite}
+/* Listening and speaking: five small bars move. */
+.workspace.layout-refined .sidebar .vega-presence:is([data-phase="listening"],[data-phase="speaking"]) .vega-presence-wave{opacity:1}
+.workspace.layout-refined .sidebar .vega-presence[data-phase="listening"] .vega-presence-wave > i{opacity:.85;animation:vega-presence-wave 1.5s ease-in-out infinite;animation-delay:var(--vega-wave-delay)}
+.workspace.layout-refined .sidebar .vega-presence[data-phase="speaking"] .vega-presence-wave > i{opacity:.9;animation:vega-presence-wave 1.1s ease-in-out infinite;animation-delay:var(--vega-wave-delay)}
+/* Needs you: a slow amber glow. */
+.workspace.layout-refined .sidebar .vega-presence[data-phase="attention"] .vega-presence-orb::before{animation:vr-breathe 2.8s ease-in-out infinite}
+
+@keyframes vr-spin{to{transform:rotate(360deg)}}
+@keyframes vr-breathe{0%,100%{opacity:.55}50%{opacity:1}}
+
+/* 5. Navigation and footer ----------------------------------------------- */
+
+.workspace.layout-refined .sidebar nav{display:flex;flex:1 0 auto;flex-direction:column;gap:2px;padding:8px 10px}
+.workspace.layout-refined .sidebar nav .layout-view-button{
+  width:100%;min-height:38px;gap:12px;padding:8px 10px;border:0;border-radius:10px;
+  background:transparent;color:var(--vr-muted);font-size:14px;font-weight:400;line-height:1.35;text-align:left
+}
+.workspace.layout-refined .sidebar nav .layout-view-button:hover{background:rgb(255 255 255/4%);color:var(--vr-ink)}
+.workspace.layout-refined .sidebar nav .layout-view-button[aria-current="page"]{border-color:transparent;background:var(--vr-hover);color:var(--vr-ink)}
+.workspace.layout-refined .sidebar nav .layout-view-button[aria-current="page"] .layout-control-icon{color:var(--vr-violet)}
+.workspace.layout-refined .sidebar nav .layout-control-icon{width:18px;height:18px}
+.workspace.layout-refined .sidebar nav [data-view="settings"]{margin-top:auto}
+
+.workspace.layout-refined .sidebar-footer{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 10px 12px 20px;
+  color:var(--vr-faint);font:12px/1.4 var(--vr-font-small);overflow-wrap:normal
+}
+.workspace.layout-refined .sidebar-footer #connection{min-width:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.workspace.layout-refined .sidebar-footer #compact{
+  flex:none;width:32px;min-width:32px;height:32px;min-height:32px;padding:0;justify-content:center;gap:0;
+  border:0;border-radius:8px;background:transparent;color:var(--vr-faint)
+}
+.workspace.layout-refined .sidebar-footer #compact:hover{background:var(--vr-hover);color:var(--vr-ink)}
+.workspace.layout-refined .sidebar-footer #compact[aria-pressed="true"]{background:var(--vr-lifted);color:var(--vr-ink)}
+.workspace.layout-refined .sidebar-footer #compact[aria-pressed="true"]:hover{background:var(--vr-hover)}
+.workspace.layout-refined .sidebar-footer #compact .layout-control-icon{width:18px;height:18px}
+
+/* 6. Compact presence keeps the orb and hides the detail line. ------------ */
+
+.compact-mode .workspace.layout-refined .sidebar .vega-presence-orb{display:grid}
+
+/* 7. Collapsed rail ---------------------------------------------------------
+   The orb stays at the top, so Vega's state is visible with the sidebar folded. */
+
+.workspace.layout-refined[data-sidebar-collapsed="true"] .layout-sidebar-tools{position:static;display:flex;justify-content:center;padding:12px 0 4px}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar .layout-icon-control{width:40px;min-width:40px;height:40px;min-height:40px;padding:0;gap:0;justify-content:center}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar .vega-presence{display:flex;flex-direction:column;align-items:center;gap:10px;padding:6px 0 8px}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar :is(.vega-presence-header,.vega-presence-stage){display:contents}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar .vega-presence-orb{display:grid;width:28px;height:28px}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar .voice-controls{flex-direction:column;align-items:center;gap:4px;margin-top:0}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar .voice-controls button{padding:0;justify-content:center}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar #voice-owner-setup{display:grid;place-items:center;width:40px;min-width:40px;height:40px;min-height:40px;padding:0;font-size:0}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar #voice-owner-setup::before{
+  content:"";width:18px;height:18px;background-color:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM5 20a7 7 0 0 1 14 0'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM5 20a7 7 0 0 1 14 0'/%3E%3C/svg%3E") center/contain no-repeat
+}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar nav{display:flex;flex:1 0 auto;flex-direction:column;align-items:center;gap:4px;padding:8px 0}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar-footer{flex-direction:column;justify-content:center;align-items:center;padding:8px 0 12px}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar-footer #compact{width:40px;min-width:40px;height:40px;min-height:40px}
+
+/* 8. Main area and conversation ---------------------------------------------
+   One 760px column. The status line, Vega's replies and the composer share
+   its left edge, and your messages align to its right edge. */
+
+/* The view title is read aloud only, so the top bar folds away unless it
+   holds the team trigger on a work view. */
+.workspace.layout-refined .topbar{min-height:0;margin:0;padding:0}
+.workspace.layout-refined #work-activity-anchor{position:fixed;top:16px;right:20px;z-index:18;max-width:calc(100vw - 208px)}
+
+.workspace.layout-refined .chat-panel > :is(.chat-state,#messages){width:min(100%,var(--layout-composer-width))}
+.workspace.layout-refined .chat-panel > #messages{width:100%}
+.workspace.layout-refined .chat-panel > .chat-state{min-height:36px;padding-inline:2px;color:var(--vr-faint);font-size:13px}
+.workspace.layout-refined .chat-state #cancel-reply{min-height:28px;padding:4px 10px;border-radius:8px;font-size:12px}
+
+.workspace.layout-refined .team-panel .activity-trigger{border-color:var(--vr-hairline);background:transparent;color:var(--vr-muted)}
+.workspace.layout-refined .team-panel .activity-trigger[data-state="review"]{border-color:var(--vr-rule);color:var(--vr-ink)}
+.workspace.layout-refined .team-panel .activity-trigger:hover:not(:disabled){border-color:var(--vr-rule);background:var(--vr-hover);color:var(--vr-ink)}
+.workspace.layout-refined .activity-trigger svg + svg{color:var(--vr-faint)}
+
+.workspace.layout-refined #messages > .message{margin:0 0 28px}
+.workspace.layout-refined #messages > .message.assistant{max-width:var(--layout-composer-width);margin-inline:auto}
+.workspace.layout-refined #messages > .message.user{
+  width:fit-content;max-width:min(85%,600px);
+  margin-left:auto;margin-right:max(0px,calc((100% - var(--layout-composer-width))/2))
+}
+.workspace.layout-refined #messages .message .body{font-size:16px;line-height:1.6}
+.workspace.layout-refined #messages .message.user .body{padding:10px 16px;border:0;border-radius:18px;background:var(--vr-lifted)}
+/* Keep reading lines near 75 characters; code and tables use the full column. */
+.workspace.layout-refined .formatted-reply > :is(p,ul,ol,blockquote,h3,h4,h5,h6){max-width:68ch}
+.workspace.layout-refined .message-actions button{color:var(--vr-faint)}
+
+/* An empty conversation is an invitation, centred in the space. */
+.workspace.layout-refined #messages:has(> .empty:only-child){display:flex;align-items:center;justify-content:center}
+.workspace.layout-refined #messages > .empty{margin:0;padding:0;color:var(--vr-muted);font:500 20px/1.35 var(--vr-font-display);text-align:center}
+
+/* 9. Composer: the one raised object on the page ---------------------------- */
+
+.workspace.layout-refined #composer{
+  min-height:0;gap:4px 8px;padding:12px 12px 10px 14px;
+  border:1px solid var(--vr-edge);border-radius:20px;background:var(--vr-lifted);box-shadow:none
+}
+.workspace.layout-refined #composer:focus-within{border-color:rgb(182 154 255/45%);box-shadow:none}
+.workspace.layout-refined #composer.composer-dragging{border-color:rgb(182 154 255/70%);background:#1d1f28;box-shadow:none}
+/* While Vega listens, the composer's edge quietly echoes the orb. */
+.workspace.layout-refined:has(#presence[data-phase="listening"]) #composer{border-color:rgb(102 224 213/35%)}
+
+/* One rule for all three states, so focusing the field never changes its height. */
+.workspace.layout-refined #composer textarea,
+.workspace.layout-refined #composer textarea:focus,
+.workspace.layout-refined #composer textarea:focus-visible{
+  min-height:40px;max-height:200px;padding:4px 4px 2px;font-size:16px;line-height:1.5;
+  field-sizing:content;scrollbar-width:thin
+}
+
+.workspace.layout-refined #composer #send{
+  display:grid;place-items:center;width:36px;height:36px;min-height:36px;padding:0;
+  border:0;border-radius:50%;background:var(--vr-violet);color:var(--vr-on-violet);font-size:0
+}
+.workspace.layout-refined #composer #send > span{display:none}
+.workspace.layout-refined #composer #send::before{
+  content:"";width:18px;height:18px;background-color:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5M6 11l6-6 6 6'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5M6 11l6-6 6 6'/%3E%3C/svg%3E") center/contain no-repeat
+}
+/* The dashboard relabels the button when a send needs retrying. */
+.workspace.layout-refined #composer #send[aria-label^="Retry"]::before{
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8'/%3E%3Cpath d='M21 3v5h-5'/%3E%3C/svg%3E");
+  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8'/%3E%3Cpath d='M21 3v5h-5'/%3E%3C/svg%3E")
+}
+.workspace.layout-refined #composer #send:hover:not(:disabled){background:var(--vr-violet-hover)}
+.workspace.layout-refined #composer #send:disabled{opacity:1;background:var(--vr-hover);color:#5d606b;cursor:default}
+
+.workspace.layout-refined #composer #attach-files{
+  display:grid;place-items:center;width:36px;height:36px;min-height:36px;padding:0;
+  border:0;border-radius:50%;background:transparent;color:var(--vr-muted);font-size:0
+}
+.workspace.layout-refined #composer #attach-files > span{display:none}
+.workspace.layout-refined #composer #attach-files::before{
+  content:"";width:20px;height:20px;background-color:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center/contain no-repeat
+}
+.workspace.layout-refined #composer #attach-files:hover:not(:disabled){background:var(--vr-hover);color:var(--vr-ink)}
+.workspace.layout-refined #composer #attach-files:disabled{opacity:.45;cursor:default}
+
+.workspace.layout-refined #composer .composer-status{margin:0 4px;font:12px/1.4 var(--vr-font-small);color:var(--vr-faint)}
+
+.workspace.layout-refined .attachment-chip{border-color:var(--vr-field-line);background:var(--vr-room)}
+.workspace.layout-refined .attachment-chip[data-phase$="error"]{border-color:#725447}
+.workspace.layout-refined .attachment-file-icon{color:var(--vr-muted)}
+.workspace.layout-refined #composer .attachment-chip button{color:var(--vr-muted)}
+.workspace.layout-refined .message-attachment{border-color:var(--vr-field-line)}
+.workspace.layout-refined .message-attachment > .attachment-thumbnail{background:var(--vr-well)}
+
+/* The hint under the composer only shows while the conversation is empty. */
+.workspace.layout-refined .chat-panel > .footnote{color:var(--vr-faint);font:12px/1.45 var(--vr-font-small);text-align:center}
+.workspace.layout-refined .chat-panel:has(#messages .message) > .footnote{display:none}
+
+/* 10. Errors keep their coral tone, without the heavy border ---------------- */
+
+.workspace.layout-refined .main-pane > #error{
+  width:min(100%,760px);margin:0 auto 12px;padding:10px 14px;border:0;border-radius:12px;
+  background:#2a1d1b;color:#f3c3b0;font-size:13px
+}
+
+/* 11. Briefing, calendar, memory and preferences ---------------------------
+   Plain headings, grouped lists instead of boxed cards, one reading measure. */
+
+.workspace.layout-refined [data-panel="briefing"] > *{max-width:720px;margin-inline:auto}
+
+.workspace.layout-refined .section-intro{padding:8px 0 20px}
+.workspace.layout-refined .section-intro h3{margin:0 0 6px;font:600 24px/1.25 var(--vr-font-display);letter-spacing:-.01em}
+.workspace.layout-refined .section-intro p{margin:0;color:var(--vr-muted);font-size:14px}
+
+.workspace.layout-refined .cards{gap:0;border-radius:16px;background:var(--vr-lifted);overflow:hidden}
+.workspace.layout-refined .cards > .card{padding:16px 20px;border:0;border-radius:0;background:transparent}
+.workspace.layout-refined .cards > .card + .card{border-top:1px solid var(--vr-hairline)}
+.workspace.layout-refined .cards > .empty{margin:0;padding:16px 20px;color:var(--vr-faint)}
+.workspace.layout-refined .card h3{margin:0 0 4px;font-size:15px;font-weight:600;letter-spacing:0}
+.workspace.layout-refined .card p{margin:4px 0;color:var(--vr-muted);font-size:13.5px}
+/* Card kinds read in sentence case. Project names keep their own case. */
+.workspace.layout-refined .card .eyebrow{
+  display:block;margin:0 0 4px;color:var(--vr-faint);font:400 12px/1.4 var(--vr-font-small);
+  letter-spacing:0;text-transform:none
+}
+.workspace.layout-refined .card .eyebrow::first-letter{text-transform:uppercase}
+.workspace.layout-refined .card .toolbar{margin:12px 0 0}
+
+.workspace.layout-refined .quiet-card{margin:32px auto;padding:24px 0 0;border:0;border-top:1px solid var(--vr-hairline);border-radius:0;background:transparent}
+.workspace.layout-refined .quiet-card h3{font:600 18px/1.3 var(--vr-font-display)}
+.workspace.layout-refined [data-panel="planning"] > h3{margin:8px 0 12px;font:600 18px/1.3 var(--vr-font-display)}
+
+.workspace.layout-refined .settings-form{gap:28px}
+.workspace.layout-refined #preferences > h3{margin:0;font:600 24px/1.25 var(--vr-font-display)}
+.workspace.layout-refined details > summary{color:var(--vr-muted)}
+
+/* Switches: a quiet outline when off, a light track when on. */
+.workspace.layout-refined .check input[role="switch"]{width:36px;min-width:36px;height:20px;border:1.5px solid #4a4d57;background:transparent}
+.workspace.layout-refined .check input[role="switch"]::before{top:2.5px;left:2.5px;width:12px;height:12px;background:var(--vr-faint)}
+.workspace.layout-refined .check input[role="switch"]:checked{background:#d9dbe3;border-color:#d9dbe3}
+.workspace.layout-refined .check input[role="switch"]:checked::before{background:#111319;transform:translateX(16px)}
+
+.workspace.layout-refined .toolbar button{min-height:36px;padding:6px 14px;font-size:13px}
+.workspace.layout-refined .toolbar h3{font:600 18px/1.3 var(--vr-font-display);letter-spacing:0}
+
+.workspace.layout-refined .segmented{width:fit-content;max-width:100%;gap:2px;padding:3px;border-radius:10px;background:var(--vr-lifted)}
+.workspace.layout-refined .segmented button{min-height:0;padding:6px 12px;border:0;border-radius:8px;background:transparent;color:var(--vr-muted);font-size:13px}
+.workspace.layout-refined .segmented button:not([aria-pressed="true"]):hover:not(:disabled){background:transparent;color:var(--vr-ink)}
+.workspace.layout-refined .segmented button[aria-pressed="true"]{background:var(--vr-hover);color:var(--vr-ink)}
+
+.workspace.layout-refined .calendar{border-color:var(--vr-hairline);border-radius:14px;background:var(--vr-hairline)}
+.workspace.layout-refined .calendar-day{background:var(--vr-room)}
+.workspace.layout-refined .calendar-day.today{background:#171922}
+.workspace.layout-refined .calendar-day .day-number{color:var(--vr-faint);font:12px/1.4 var(--vr-font-small);font-variant-numeric:tabular-nums}
+.workspace.layout-refined .calendar-day.today .day-number{color:var(--vr-ink);font-weight:600}
+.workspace.layout-refined .calendar-event{padding:4px 6px;border:0;border-radius:6px;background:var(--vr-hover);color:var(--vr-ink);font-size:12px;line-height:1.3}
+.workspace.layout-refined .calendar-event:hover:not(:disabled){background:#2a2c35}
+.workspace.layout-refined .calendar-day.drag-target{outline-color:var(--vr-focus)}
+.workspace.layout-refined .calendar > .empty{margin:0;padding:16px;background:var(--vr-room)}
+
+
+/* 12. Dialogs and sheets ----------------------------------------------------- */
+#voice-feedback{flex:none;margin:6px 0 10px;padding:8px 12px;border-radius:10px;background:var(--vr-lifted);color:var(--vr-muted);font-size:13px;line-height:1.5}
+
+dialog{border:1px solid rgb(255 255 255/8%);border-radius:20px;background:var(--vr-sheet);color:var(--vr-ink);box-shadow:0 24px 80px rgb(0 0 0/55%)}
+dialog::backdrop{background:rgb(5 6 10/72%);backdrop-filter:blur(3px)}
+dialog h2{font:600 21px/1.3 var(--vr-font-display);letter-spacing:-.01em}
+
+.workspace.layout-refined dialog.activity-sheet{
+  border-color:rgb(255 255 255/8%);background:var(--vr-sheet);color:var(--vr-ink);
+  font-family:var(--vr-font);scrollbar-color:#353540 transparent
+}
+.workspace.layout-refined .activity-sheet .activity-heading{background:var(--vr-sheet)}
+.workspace.layout-refined .speaker-profile-panel .sp-delete-dialog{border-color:rgb(255 255 255/8%);background:var(--vr-sheet)}
+.workspace.layout-refined .speaker-profile-panel .sp-delete-dialog::backdrop{background:rgb(5 6 10/72%)}
+
+/* 13. Replies: code, quotes and tables in the same quiet palette ------------ */
+
+.workspace.layout-refined .formatted-reply a{color:var(--vr-ink);text-decoration-color:rgb(237 238 243/38%)}
+.workspace.layout-refined .formatted-reply a:hover{color:var(--vr-ink);text-decoration-color:currentColor}
+.workspace.layout-refined .formatted-reply blockquote{border-left-color:var(--vr-rule);color:var(--vr-muted)}
+.workspace.layout-refined .formatted-reply :not(pre) > code{border-color:transparent;border-radius:6px;background:#1f2129;color:var(--vr-ink);font-family:var(--vr-font-code)}
+.workspace.layout-refined .formatted-reply :is(.reply-task-item > input,.reply-task-item > p > input){accent-color:var(--vr-light)}
+.workspace.layout-refined .reply-code-block{border-color:var(--vr-hairline);background:var(--vr-well)}
+.workspace.layout-refined .reply-code-header{border-bottom-color:var(--vr-hairline);color:var(--vr-faint);font:12px/1.4 var(--vr-font-small)}
+.workspace.layout-refined .reply-code-header button{border-radius:8px;color:var(--vr-muted)}
+.workspace.layout-refined .reply-code-header button:hover:not(:disabled){background:var(--vr-hover);color:var(--vr-ink)}
+.workspace.layout-refined .formatted-reply pre{font-family:var(--vr-font-code)}
+.workspace.layout-refined .reply-code-block pre code{color:#d9dbe2}
+.workspace.layout-refined .reply-table-wrap{border-color:var(--vr-hairline)}
+.workspace.layout-refined .reply-table-wrap :is(th,td){border-bottom-color:var(--vr-hairline)}
+.workspace.layout-refined .reply-table-wrap th{background:#16181f}
+
+/* 14. Projects & work, automations and the team sheet ----------------------
+   The same graphite palette. State colours stay only where they carry meaning. */
+
+.workspace.layout-refined .wo-eyebrow{display:none}
+.workspace.layout-refined :is(.wo-heading,.n8n-heading) h2{margin:0;font:600 24px/1.25 var(--vr-font-display);letter-spacing:-.01em}
+
+.workspace.layout-refined .wo-switch{border-color:transparent;background:var(--vr-lifted)}
+.workspace.layout-refined .wo-switch button{background:transparent;color:var(--vr-muted)}
+.workspace.layout-refined .wo-switch button:not([aria-pressed="true"]):hover:not(:disabled){background:transparent;color:var(--vr-ink)}
+.workspace.layout-refined .wo-switch button[aria-pressed="true"]{background:var(--vr-hover);color:var(--vr-ink);box-shadow:none}
+.workspace.layout-refined .wo-pause{border-left:2px solid var(--vr-rule);background:var(--vr-lifted);color:var(--vr-muted)}
+
+.workspace.layout-refined .wo-map{border-color:var(--vr-hairline);background-color:#0e1015;background-image:radial-gradient(#262831 1px,transparent 1px)}
+.workspace.layout-refined .wo-edges path{stroke:#3d404b;opacity:1}
+.workspace.layout-refined .wo-node{border-color:#2e3039;background:var(--vr-lifted);box-shadow:none}
+.workspace.layout-refined .wo-node:hover{border-color:var(--vr-rule);background:var(--vr-hover)}
+.workspace.layout-refined .wo-node-top{color:var(--vr-faint);font-size:11px;letter-spacing:0}
+.workspace.layout-refined .wo-node-top > span:not(.wo-node-symbol){display:block;text-transform:lowercase}
+.workspace.layout-refined .wo-node-top > span:not(.wo-node-symbol)::first-letter{text-transform:uppercase}
+.workspace.layout-refined .wo-node strong{color:var(--vr-ink)}
+.workspace.layout-refined .wo-node small{color:var(--vr-faint)}
+.workspace.layout-refined .wo-node[data-kind="vega"]{border-color:rgb(182 154 255/45%)}
+.workspace.layout-refined .wo-node[data-kind="vega"] .wo-node-symbol{color:var(--vr-violet)}
+.workspace.layout-refined .wo-node[data-kind="automation"]{border-color:var(--vr-rule)}
+.workspace.layout-refined .wo-node[data-kind="automation"] .wo-node-symbol{color:var(--vr-muted)}
+.workspace.layout-refined .wo-node:is([data-state="running"],[data-state="delegating"],[data-state="reviewing"]){border-color:rgb(111 158 255/55%)}
+.workspace.layout-refined .wo-node:is([data-state="completed"],[data-state="accepted"]){border-color:#2f5b53}
+.workspace.layout-refined .wo-node:is([data-state="failed"],[data-state="needs_revision"],[data-state="review_blocked"]){border-color:#9a6654}
+.workspace.layout-refined :is(.wo-zoom,.wo-map-pages){border-color:var(--vr-hairline);background:var(--vr-lifted);box-shadow:none}
+.workspace.layout-refined .wo-zoom button:last-child{border-left-color:var(--vr-hairline)}
+.workspace.layout-refined .wo-map-hint{color:var(--vr-faint)}
+
+.workspace.layout-refined .wo-project-summary{border-color:transparent;background:var(--vr-lifted)}
+.workspace.layout-refined .wo-project-summary .wo-next,
+.workspace.layout-refined .wo-checklist-counts{color:var(--vr-muted)}
+.workspace.layout-refined .wo-column{border-color:transparent;background:var(--vr-sheet)}
+.workspace.layout-refined .wo-column h3{color:var(--vr-muted)}
+.workspace.layout-refined .wo-column-count{background:var(--vr-hover);color:var(--vr-faint)}
+.workspace.layout-refined .wo-column[data-column="owner"] h3{color:var(--vr-ink)}
+.workspace.layout-refined .wo-column[data-column="attention"] h3{color:var(--vr-amber)}
+.workspace.layout-refined .wo-empty{color:var(--vr-faint)}
+.workspace.layout-refined .wo-card{border-color:#262830;background:var(--vr-lifted)}
+.workspace.layout-refined .wo-card:hover:not(:disabled){border-color:var(--vr-field-line);background:#20222a}
+/* Card kinds arrive in capitals; show them in sentence case. */
+.workspace.layout-refined .wo-card-kind{display:block;font-size:11px;letter-spacing:0;color:var(--vr-faint);text-transform:lowercase}
+.workspace.layout-refined .wo-card-kind::first-letter{text-transform:uppercase}
+.workspace.layout-refined .wo-card[data-kind] .wo-card-kind{color:var(--vr-faint)}
+/* "n8n workflow" keeps its lower-case n. */
+.workspace.layout-refined .wo-card[data-kind="automation"] .wo-card-kind::first-letter{text-transform:none}
+.workspace.layout-refined .wo-card small{color:var(--vr-faint)}
+.workspace.layout-refined .wo-card-status{color:var(--vr-muted)}
+.workspace.layout-refined .wo-footer{color:var(--vr-faint)}
+
+.workspace.layout-refined .n8n-editor-link{border-color:var(--vr-hairline);color:var(--vr-ink)}
+.workspace.layout-refined .n8n-editor-link:hover{background:var(--vr-hover)}
+.workspace.layout-refined :is(.n8n-connection,.n8n-design){border-color:transparent;border-radius:16px;background:var(--vr-lifted)}
+.workspace.layout-refined :is(.n8n-design,.n8n-drafts,.n8n-activity) h3{font:600 18px/1.3 var(--vr-font-display)}
+.workspace.layout-refined .n8n-review pre{border-color:var(--vr-hairline);background:var(--vr-well);font-family:var(--vr-font-code)}
+
+/* Team sheet */
+.workspace.layout-refined .activity-sheet .activity-tabs{gap:2px;padding:3px;border-radius:10px;background:var(--vr-lifted)}
+.workspace.layout-refined .activity-sheet .activity-tabs button{border-color:transparent;border-radius:8px;background:transparent;color:var(--vr-muted)}
+.workspace.layout-refined .activity-sheet .activity-tabs button:not([aria-selected="true"]):hover:not(:disabled){background:transparent;color:var(--vr-ink)}
+.workspace.layout-refined .activity-sheet .activity-tabs button[aria-selected="true"]{border-color:transparent;background:var(--vr-hover);color:var(--vr-ink)}
+.workspace.layout-refined .activity-heading :is(.activity-close,.activity-refresh){border-color:transparent;background:transparent;color:var(--vr-muted)}
+.workspace.layout-refined .activity-heading :is(.activity-close,.activity-refresh):hover:not(:disabled){background:var(--vr-hover);color:var(--vr-ink)}
+.workspace.layout-refined .activity-run-picker{color:var(--vr-faint)}
+.workspace.layout-refined .activity-run-picker select{border-color:var(--vr-field-line);background:var(--vr-lifted);color:var(--vr-ink)}
+.workspace.layout-refined .activity-sheet .team-diff{border-color:var(--vr-hairline);background:var(--vr-well);color:#d9dbe2;font-family:var(--vr-font-code)}
+.workspace.layout-refined .activity-artifact-text{border:1px solid var(--vr-hairline);background:var(--vr-well);font-family:var(--vr-font-code)}
+.workspace.layout-refined div.activity-artifact-text{font-family:var(--vr-font);color:var(--vr-ink)}
+.workspace.layout-refined :is(.activity-route,.team-node){border-left-color:var(--vr-rule)}
+.workspace.layout-refined :is(.activity-project-request,.activity-agent){border-color:var(--vr-field-line)}
+.workspace.layout-refined .activity-project-request > summary::before{color:var(--vr-muted)}
+.workspace.layout-refined .activity-request-state{color:var(--vr-muted)}
+.workspace.layout-refined .activity-sheet details{color:var(--vr-muted)}
+.workspace.layout-refined .activity-sheet details p{color:#cfd1d8}
+.workspace.layout-refined .activity-route-steps{color:var(--vr-faint)}
+.workspace.layout-refined .activity-route-steps [data-complete="true"]{color:var(--vr-ink)}
+.workspace.layout-refined .activity-vega-review{border-color:var(--vr-rule);background:#1d1f27}
+.workspace.layout-refined .activity-vega-review[data-verdict="accepted"]{border-color:#46645d}
+.workspace.layout-refined .activity-vega-review:is([data-verdict="blocked"],[data-verdict="needs_revision"]){border-color:#80604b}
+.workspace.layout-refined .activity-pause{border-color:var(--vr-field-line);background:var(--vr-lifted);color:var(--vr-muted)!important}
+.workspace.layout-refined :is(.team-muted,.team-state){color:var(--vr-muted)!important}
+
+/* 15. Phones ---------------------------------------------------------------- */
+
+@media (max-width:720px){
+  /* Expanded, the sidebar stacks above the chat with a sideways navigation. */
+  .workspace.layout-refined:not([data-sidebar-collapsed="true"]) > .sidebar{border-right:0;border-bottom:1px solid rgb(255 255 255/4.5%)}
+  .workspace.layout-refined:not([data-sidebar-collapsed="true"]) .sidebar nav{flex:none;flex-direction:row;gap:4px;padding:4px 12px 10px}
+  .workspace.layout-refined:not([data-sidebar-collapsed="true"]) .sidebar nav .layout-view-button{width:auto;min-height:40px}
+  .workspace.layout-refined:not([data-sidebar-collapsed="true"]) .sidebar nav [data-view="settings"]{margin-top:0}
+  .workspace.layout-refined[data-sidebar-collapsed="true"] > .sidebar{border-right:1px solid rgb(255 255 255/4.5%)}
+  .workspace.layout-refined .sidebar .voice-controls button{min-height:40px}
+
+  .workspace.layout-refined #composer{padding:10px 10px 8px 12px}
+  .workspace.layout-refined #composer #send,
+  .workspace.layout-refined #composer #attach-files{width:44px;height:44px;min-height:44px}
+  .workspace.layout-refined #messages > .message.user{max-width:88%}
+
+  .workspace.layout-refined .section-intro h3,
+  .workspace.layout-refined :is(.wo-heading,.n8n-heading) h2{font-size:21px}
+}
+
+/* 16. Touch screens get 44px targets ---------------------------------------- */
+
+@media (pointer:coarse){
+  .workspace.layout-refined .sidebar nav .layout-view-button{min-height:44px}
+  .workspace.layout-refined .sidebar .voice-controls button{min-height:44px}
+  .workspace.layout-refined .layout-sidebar-toggle{width:40px;height:40px;min-height:40px}
+  .workspace.layout-refined:not([data-sidebar-collapsed="true"]) .layout-sidebar-tools{top:18px}
+  .workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar .layout-icon-control,
+  .workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar #voice-owner-setup{width:44px;min-width:44px;height:44px;min-height:44px}
+}
+
+/* 17. Windows high-contrast themes ------------------------------------------ */
+
+@media (forced-colors:active){
+  .workspace.layout-refined .sidebar nav .layout-view-button[aria-current="page"]{border:1px solid Highlight;outline:1px solid Highlight;outline-offset:-2px}
+  .workspace.layout-refined #composer{border:1px solid CanvasText}
+  .workspace.layout-refined #composer :is(#send,#attach-files){border:1px solid ButtonText}
+  .workspace.layout-refined #composer :is(#send,#attach-files)::before,
+  .workspace.layout-refined[data-sidebar-collapsed="true"] .sidebar #voice-owner-setup::before{forced-color-adjust:none;background-color:ButtonText}
+  .workspace.layout-refined #composer #send:disabled::before{background-color:GrayText}
+}
+
+/* 18. Reduced motion: the orb is fully still, and its colour carries the state. */
+
+@media (prefers-reduced-motion:reduce){
+  .workspace.layout-refined .sidebar .vega-presence-orb *,
+  .workspace.layout-refined .sidebar .vega-presence-orb::before{animation:none!important}
+}
+
+/* Everyday views: short navigation, optional setup, and a readable project list. */
+.workspace.layout-refined .nav-more {margin-top:12px;border:0;min-width:0}
+.workspace.layout-refined .nav-more > summary {display:flex;align-items:center;gap:10px;min-height:40px;padding:8px 12px;border-radius:10px;color:var(--vr-muted);cursor:pointer;list-style:none}
+.workspace.layout-refined .nav-more > summary::-webkit-details-marker {display:none}
+.workspace.layout-refined .nav-more > summary > span:first-child {width:18px;font-size:22px;line-height:18px;text-align:center}
+.workspace.layout-refined .nav-more > summary:hover {background:var(--vr-hover);color:var(--vr-ink)}
+.workspace.layout-refined .nav-more[open] > summary {margin-bottom:4px}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .nav-more {width:44px}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .nav-more > summary {justify-content:center;min-height:44px;padding:0}
+.workspace.layout-refined[data-sidebar-collapsed="true"] .nav-more-label {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.workspace.layout-refined > .main-pane > [data-panel="settings"] {
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;
+  align-content:start;align-items:start;max-width:1600px;margin-inline:auto;padding:4px 10px 30px 0;
+}
+.workspace.layout-refined [data-panel="settings"] > :is(#preferences,#voice-settings) {grid-column:1/-1}
+.workspace.layout-refined [data-panel="settings"] > .quiet-card {grid-column:auto}
+.workspace.layout-refined [data-panel="settings"] .settings-form {max-width:none;width:100%}
+.workspace.layout-refined #preferences {
+  grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px;padding:24px;
+  border:1px solid var(--vr-hairline);border-radius:18px;background:var(--surface);
+}
+.workspace.layout-refined #preferences > :is(h3,.settings-extra,.toolbar,[role="status"]) {grid-column:1/-1;margin:0}
+.workspace.layout-refined .settings-profile-fields {display:grid;gap:16px;min-width:0}
+.workspace.layout-refined #preferences > fieldset {min-width:0;margin:0;align-content:start}
+.workspace.layout-refined #preference-result:empty {display:none}
+.workspace.layout-refined .settings-form {gap:22px}
+.workspace.layout-refined .settings-extra {padding:0;border:0}
+.workspace.layout-refined .settings-extra > summary {padding:4px 0;color:var(--vr-muted);cursor:pointer}
+.workspace.layout-refined .settings-extra[open] > fieldset {margin-top:20px}
+.workspace.layout-refined .settings-disclosure {margin:0;border:0;border-top:1px solid var(--vr-hairline);border-radius:0;padding:0;background:transparent}
+.workspace.layout-refined .settings-disclosure > summary {padding:18px 0;cursor:pointer;font-weight:600}
+.workspace.layout-refined .settings-disclosure[open] {padding-bottom:18px}
+.workspace.layout-refined .settings-disclosure .toolbar {flex-wrap:wrap}
+@media (max-width:1000px) {
+  .workspace.layout-refined > .main-pane > [data-panel="settings"],
+  .workspace.layout-refined #preferences {grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:650px) {
+  .workspace.layout-refined > .main-pane > [data-panel="settings"] {gap:18px;padding-right:4px}
+  .workspace.layout-refined #preferences {padding:18px 14px}
+}
+.workspace.layout-refined .n8n-design > summary {font-weight:600;cursor:pointer}
+.workspace.layout-refined .n8n-design[open] > summary {margin-bottom:18px}
+.wo-list {width:100%;max-width:960px;margin-inline:auto}
+.wo-project-row {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 24px;padding:17px 4px;border-bottom:1px solid var(--line);align-items:center}
+.wo-project-name {background:transparent;border:0;padding:0;text-align:left;font-size:15px;font-weight:600;color:var(--ink);min-height:30px}
+.wo-project-state {font-size:12px;color:var(--muted);text-align:right;max-width:240px}
+.wo-project-next {grid-column:1/-1;margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.wo-project-detail {grid-column:1/-1;margin:8px 0;color:var(--ink);font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+.wo-list > h3 {font-size:16px;margin:28px 0 14px}
+.wo-work-row {display:flex;width:100%;flex-direction:column;align-items:flex-start;gap:6px;margin:8px 0;padding:16px;text-align:left}
+.wo-work-row > span {font-size:12px;color:var(--muted)}
+.wo-back {margin-bottom:12px;font-size:13px}
+.wo-list[hidden] {display:none}
+@media (max-width:720px) {
+ .workspace.layout-refined:not([data-sidebar-collapsed="true"]) .nav-more {margin:0}
+ .workspace.layout-refined:not([data-sidebar-collapsed="true"]) .nav-more[open] {display:flex;flex-wrap:wrap;align-items:center}
+ .wo-project-row {gap:6px 12px}
+ .wo-project-state {max-width:120px;font-size:11px}
+ .wo-project-name {min-height:44px}
+ .wo-toolbar {flex-wrap:wrap}
+}
+
+.workspace.layout-refined .memory-panel .mp-section-nav {display:none}
+.workspace.layout-refined .memory-panel .mp-disclosure {border-top:1px solid var(--vr-hairline);padding:14px 0;margin-top:12px}
+.workspace.layout-refined .memory-panel .mp-disclosure > summary {cursor:pointer;font-size:14px;font-weight:600}
+.workspace.layout-refined .memory-panel .mp-disclosure[open] > summary {margin-bottom:18px}
+.workspace.layout-refined .memory-panel .mp-disclosure .mp-section {margin:0}
+.workspace.layout-refined .memory-panel .mp-help {color:var(--vr-muted)}
+.workspace.layout-refined .memory-panel [data-memory-section="notes"] > .mp-section-description {display:none}
+.workspace.layout-refined .memory-panel .mp-learning {padding:12px 16px}
+
+/* The application owns the viewport. Long histories, hidden accessible labels
+   and graph geometry must never extend the outer document into blank pages. */
+html:has(> body.vega-app) {height:100%;overflow:hidden;overscroll-behavior:none}
+body.vega-app {position:fixed;inset:0;width:100%;height:100dvh;overflow:hidden;overscroll-behavior:none}
+.workspace.layout-refined.floating-shell {display:block;position:relative;height:100dvh;min-height:0;overflow:hidden}
+.workspace.layout-refined.floating-shell > .main-pane {height:100%;min-height:0;padding:18px 28px 18px 90px;overflow:hidden}
+.workspace.layout-refined.floating-shell > .main-pane > [data-panel] {min-height:0;overscroll-behavior:contain}
+.workspace.layout-refined.floating-shell .chat-panel {overflow:hidden}
+.workspace.layout-refined.floating-shell #messages {min-height:0;overscroll-behavior:contain;overflow-anchor:none}
+
+/* Floating left navigation; opening its labels never resizes the canvas. */
+.workspace.layout-refined.floating-shell > .sidebar {
+ position:fixed;z-index:30;left:12px;top:50%;transform:translateY(-50%);
+ width:56px;height:auto;max-height:calc(100dvh - 24px);min-height:0;
+ display:flex;flex-direction:column;align-items:center;padding:4px 0;
+ border:0;background:transparent;overflow-x:hidden;overflow-y:auto;scrollbar-width:none
+}
+.workspace.layout-refined.floating-shell .sidebar .vega-presence {
+ display:grid;grid-template-columns:1fr;gap:0;width:56px;min-height:0;max-height:none;
+ padding:10px 8px;margin:0;flex:none
+}
+.workspace.layout-refined.floating-shell .sidebar .vega-presence-orb {
+ display:grid;width:36px;height:36px;grid-column:1;grid-row:1;justify-self:center;margin:0
+}
+.workspace.layout-refined.floating-shell .sidebar .voice-controls {grid-column:1/-1;margin-top:8px}
+.workspace.layout-refined.floating-shell[data-sidebar-collapsed="true"] .sidebar #voice-owner-setup {display:none}
+.workspace.layout-refined.floating-shell .sidebar nav {
+ --vega-nav-gap:7px;
+ display:flex;flex-direction:column;flex:none;align-items:center;gap:var(--vega-nav-gap);padding:6px;width:56px;overflow:visible
+}
+.workspace.layout-refined.floating-shell .sidebar nav .layout-view-button,
+.workspace.layout-refined.floating-shell .nav-more > summary,
+.workspace.layout-refined.floating-shell .layout-sidebar-toggle {
+ display:flex;align-items:center;justify-content:center;width:44px;min-width:44px;height:44px;min-height:44px;
+ margin:0;padding:0;border:1px solid #343640;border-radius:50%;
+ background:#191b23e8;backdrop-filter:blur(14px);color:#c0c2cc
+}
+.workspace.layout-refined.floating-shell .sidebar nav .layout-view-button[aria-current="page"] {
+ background:#36313f;border-color:#686073;color:#f3edff
+}
+.workspace.layout-refined.floating-shell .sidebar nav .layout-view-button:hover,
+.workspace.layout-refined.floating-shell .layout-sidebar-toggle:hover,
+.workspace.layout-refined.floating-shell .nav-more > summary:hover {background:#2b2d37;border-color:#666371}
+.workspace.layout-refined.floating-shell .sidebar nav [data-view="settings"] {margin-top:4px}
+.workspace.layout-refined.floating-shell .nav-more {width:44px;margin:0;flex:none}
+.workspace.layout-refined.floating-shell .nav-more[open] {display:block}
+.workspace.layout-refined.floating-shell .nav-more[open] > summary {margin-bottom:var(--vega-nav-gap)}
+.workspace.layout-refined.floating-shell .sidebar nav .nav-more > .layout-view-button + .layout-view-button {margin-top:var(--vega-nav-gap)}
+.workspace.layout-refined.floating-shell .layout-sidebar-tools {position:static;order:4;display:flex;justify-content:center;width:100%;padding:4px 0}
+.workspace.layout-refined.floating-shell[data-sidebar-collapsed="true"] .sidebar-footer {display:none}
+.workspace.layout-refined.floating-shell:not([data-sidebar-collapsed="true"]) > .sidebar {
+ align-items:stretch;width:236px;padding:10px;border:1px solid #393b46;border-radius:24px;
+ background:#14161eef;box-shadow:0 16px 60px #0006;backdrop-filter:blur(20px)
+}
+.workspace.layout-refined.floating-shell:not([data-sidebar-collapsed="true"]) .sidebar .vega-presence {
+ width:100%;grid-template-columns:42px minmax(0,1fr);column-gap:10px;padding:8px
+}
+.workspace.layout-refined.floating-shell:not([data-sidebar-collapsed="true"]) .sidebar .vega-presence-orb {grid-row:1/span 2}
+.workspace.layout-refined.floating-shell:not([data-sidebar-collapsed="true"]) .sidebar .vega-presence-identity-copy {margin:0}
+.workspace.layout-refined.floating-shell:not([data-sidebar-collapsed="true"]) .sidebar nav {width:100%;align-items:stretch}
+.workspace.layout-refined.floating-shell:not([data-sidebar-collapsed="true"]) .sidebar nav .layout-view-button,
+.workspace.layout-refined.floating-shell:not([data-sidebar-collapsed="true"]) .nav-more > summary {
+ width:100%;justify-content:flex-start;gap:12px;padding:0 12px;border-radius:12px;border-color:transparent;background:transparent
+}
+.workspace.layout-refined.floating-shell:not([data-sidebar-collapsed="true"]) .nav-more {width:100%}
+.workspace.layout-refined.floating-shell:not([data-sidebar-collapsed="true"]) .sidebar-footer {padding:8px 12px;flex:none;margin:0}
+.workspace.layout-refined.floating-shell:not([data-sidebar-collapsed="true"]) .layout-sidebar-toggle {width:100%;border-radius:12px}
+
+.workspace.layout-refined.floating-shell[data-active-view="work"][data-work-mode="map"] > .main-pane {padding:0}
+.workspace.layout-refined.floating-shell[data-active-view="work"][data-work-mode="map"] .topbar {
+ position:absolute;top:16px;right:20px;z-index:8;margin:0;min-height:0;max-width:calc(100% - 208px)
+}
+.workspace.layout-refined.floating-shell [data-panel="work"] {overflow:hidden}
+.workspace.layout-refined.floating-shell #work-overview-workspace {height:100%;min-height:0;overflow:hidden}
+.workspace.layout-refined.floating-shell .wo-inspector :is(p,li) {color:var(--vr-muted)}
+.workspace.layout-refined.floating-shell .wo-inspector .wo-detail-state {color:var(--vr-ink)}
+
+@media(max-width:650px) {
+ .workspace.layout-refined.floating-shell > .main-pane {padding:12px 12px 12px 76px}
+ .workspace.layout-refined.floating-shell > .sidebar {left:6px}
+ .workspace.layout-refined #work-activity-anchor{top:12px;right:12px}
+ .workspace.layout-refined.floating-shell .sidebar nav {--vega-nav-gap:5px}
+}
+@media(max-height:640px) {
+ .workspace.layout-refined.floating-shell > .sidebar {top:8px;transform:none;max-height:calc(100dvh - 16px)}
+ .workspace.layout-refined.floating-shell .sidebar nav {--vega-nav-gap:4px}
+}
