@@ -11,8 +11,8 @@ settings, account IDs, or downloaded model runtimes.
    `C:\Program Files`, since Vega keeps its local configuration beside the app.
 3. Open PowerShell in the extracted folder and run `.\Initialize-Vega.ps1`.
    It creates private configuration from the examples, a Vega-only Python
-   environment, and installs the pinned Python and Node dependencies. Existing
-   settings are never overwritten.
+   environment, installs the pinned Python and Node dependencies, and builds
+   the local UI assets. Existing settings are never overwritten.
 4. Install and configure OmniRoute separately with your own provider accounts.
    The example routes through `auto/best-free` at `127.0.0.1:20128`.
 5. Run `.\Install-OmniRoute-Startup.ps1`, then `.\Install-Startup.ps1`.
@@ -53,6 +53,10 @@ Rebuild the UI after installing dependencies with `npm ci`:
 ```powershell
 npm run build
 ```
+
+Generated bundles, compiled policy modules, vendored npm browser modules, and
+their generated license copies are intentionally not tracked. First-run setup
+creates these files from the pinned dependencies.
 
 See `THIRD_PARTY_NOTICES.md` and `THIRD_PARTY_SBOM.cdx.json` for dependency
 attributions and the resolved Node dependency inventory.

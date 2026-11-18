@@ -61,6 +61,8 @@ if (-not $SkipDependencyInstall) {
     try {
         & $npmCommand.Source ci --no-audit --no-fund
         if ($LASTEXITCODE -ne 0) { throw 'Installing Vega dependencies failed.' }
+        & $npmCommand.Source run build
+        if ($LASTEXITCODE -ne 0) { throw 'Building Vega local UI assets failed.' }
     } finally {
         Pop-Location
     }

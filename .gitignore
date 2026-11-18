@@ -3,6 +3,16 @@
 __pycache__/
 *.log
 node_modules/
+# Rebuilt by Initialize-Vega.ps1 / npm run build.
+/public/dashboard.bundle.js
+/public/policy/
+/public/vegaPresence.css
+/public/vegaPcmWorklet.js
+/public/vendor/marked.js
+/public/vendor/entities/
+/third-party/entities-LICENSE.txt
+/third-party/marked-LICENSE.txt
+/RELEASE_AUDIT.txt
 .speaker-runtime/
 .speaker-models/
 .n8n/
